@@ -424,6 +424,10 @@
     <string name="loading_text_favorites">Loading favorites…</string>
     <string name="loading_text_notifications">Loading notifications…</string>
 
+    <string name="cache_updating_friends">Loading friends…</string>
+    <string name="cache_updating_profile">Loading profile…</string>
+    <string name="cache_updating_recent">Loading recents…</string>
+    <string name="cache_updating_favorites">Loading favorites…</string>
     <!-- Theming -->
 
     <string name="theme_page_title">Theme</string>

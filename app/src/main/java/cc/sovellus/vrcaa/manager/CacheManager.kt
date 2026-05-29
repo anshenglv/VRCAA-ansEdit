@@ -36,7 +36,7 @@ object CacheManager : BaseManager<CacheManager.CacheListener>() {
 
     interface CacheListener {
         fun updateRecentlyVisitedWorlds(worlds: List<WorldCache>) { }
-        fun startCacheRefresh() { }
+        fun startCacheRefresh(refreshFavorites: Boolean = false) { }
         fun endCacheRefresh() { }
         fun profileUpdated(profile: User) { }
     }
@@ -62,7 +62,7 @@ object CacheManager : BaseManager<CacheManager.CacheListener>() {
 
     private var cacheHasBeenBuilt: Boolean = false
 
-    suspend fun buildCache() = coroutineScope {
+    suspend fun buildCache(refreshFavorites: Boolean) = coroutineScope {
         cacheHasBeenBuilt = false
 
         synchronized(worldListLock) {
@@ -74,10 +74,10 @@ object CacheManager : BaseManager<CacheManager.CacheListener>() {
             recentWorldsStateFlow.value = emptyList()
         }
 
-        App.setLoadingText(R.string.global_app_default_loading_text)
+        //App.setLoadingText(R.string.global_app_default_loading_text)
 
         getListeners().forEach { listener ->
-            listener.startCacheRefresh()
+            listener.startCacheRefresh(refreshFavorites)
         }
 
         val user = async { api.auth.fetchCurrentUser() }.await()
@@ -87,7 +87,9 @@ object CacheManager : BaseManager<CacheManager.CacheListener>() {
         val notifications = async { api.user.fetchNotifications() }.await()
         val notificationsV2 = async { api.notifications.fetchNotifications() }.await()
 
-        async { FavoriteManager.refresh() }.await()
+        if (refreshFavorites) {
+            async { FavoriteManager.refresh() }.await()
+        }
 
         val userLocations = onlineFriends.mapNotNull { friend ->
             friend.location.takeIf { it.contains("wrld_") }?.split(":")?.getOrNull(0)
@@ -126,7 +128,6 @@ object CacheManager : BaseManager<CacheManager.CacheListener>() {
             })
             recentWorldsStateFlow.value = recentWorldList.toList()
         }
-
         recommendedWorldsStateFlow.value = RecommendationManager.recommendWorlds()
 
         getListeners().forEach { listener ->

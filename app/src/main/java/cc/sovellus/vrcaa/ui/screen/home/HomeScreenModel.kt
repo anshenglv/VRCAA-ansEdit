@@ -41,7 +41,7 @@ class HomeScreenModel : StateScreenModel<HomeState>(HomeState.Init) {
     val recentlyVisited: StateFlow<List<WorldCache>> = CacheManager.recentWorldsState
 
     private val cacheListener = object : CacheManager.CacheListener {
-        override fun startCacheRefresh() {
+        override fun startCacheRefresh(refreshFavorites: Boolean) {
             mutableState.value = HomeState.Loading
         }
 

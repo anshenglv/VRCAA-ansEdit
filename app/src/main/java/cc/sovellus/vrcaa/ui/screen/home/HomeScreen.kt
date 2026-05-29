@@ -40,6 +40,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.screen.uniqueScreenKey
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import cc.sovellus.vrcaa.App
 import cc.sovellus.vrcaa.R
 import cc.sovellus.vrcaa.helper.StatusHelper
 import cc.sovellus.vrcaa.manager.CacheManager
@@ -64,7 +65,8 @@ class HomeScreen : Screen {
         val state by model.state.collectAsState()
 
         when (state) {
-            is HomeState.Loading -> LoadingIndicatorScreen().Content()
+            is HomeState.Loading -> {App.setLoadingText(R.string.cache_updating_recent)
+                LoadingIndicatorScreen().Content()}
             is HomeState.Result -> ShowScreen(model)
             else -> {}
         }

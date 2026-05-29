@@ -133,7 +133,7 @@ class MainActivity : BaseActivity() {
             val minutes = (System.currentTimeMillis() - preferences.timeInBackground) / (1000 * 60)
             if (minutes >= 15) {
                 lifecycleScope.launch(Dispatchers.IO) {
-                    CacheManager.buildCache()
+                    CacheManager.buildCache(refreshFavorites = false)
                 }
             }
         }

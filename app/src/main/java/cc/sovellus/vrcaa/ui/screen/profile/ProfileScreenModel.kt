@@ -33,7 +33,7 @@ class ProfileScreenModel : StateScreenModel<ProfileScreenModel.ProfileState>(Pro
             mutableState.value = ProfileState.Result(profile)
         }
 
-        override fun startCacheRefresh() {
+        override fun startCacheRefresh(refreshFavorites: Boolean) {
             mutableState.value = ProfileState.Loading
         }
 

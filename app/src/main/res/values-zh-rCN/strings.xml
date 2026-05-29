@@ -2,8 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!-- Universal Strings -->
     <string name="result_not_found">这里空空如也～</string>
-    <string name="legal_disclaimer">"VRCAA is not endorsed by VRChat Inc. or any of their affiliates.
-（VRCAA 并非是 VRChat Inc. 官方应用，也并未受其或任何相关附属公司认可）"</string>
+    <string name="legal_disclaimer">"VRCAA 并非是 VRChat Inc. 官方应用，也并未受其或任何相关附属公司认可"</string>
     <!-- Friends -->
     <string-array name="friend_selection_options">
         <item>收藏</item>
@@ -23,7 +22,7 @@
     <string name="home_active_friends">好友（在线）</string>
     <string name="home_recently_visited">最近访问</string>
     <string name="home_friend_locations">好友位置</string>
-    <string name="home_curated_for_you">Curated For You</string>
+    <string name="home_curated_for_you">为你推荐</string>
     <!-- Login -->
     <string name="login_text">登录到 VRC Android Assistant</string>
     <string name="login_label_username">用户名或电子邮件地址</string>
@@ -32,10 +31,10 @@
     <string name="login_toast_wrong_credentials">用户名或密码错误。</string>
     <string name="login_toast_wrong_code">验证失败，请检查代码。</string>
     <!-- Onboarding -->
-    <string name="onboarding_title">Let\'s get started!</string>
-    <string name="onboarding_description">Stay connected to your VRChat world. Manage your profile, keep up with friends, and never miss what’s happening — all from your Android device.</string>
-    <string name="onboarding_permissions_title">You might need to grant permissions.</string>
-    <string name="onboarding_permissions_description">Enable notifications to receive friend updates and activity alerts in real time.</string>
+    <string name="onboarding_title">让我们开始吧！</string>
+    <string name="onboarding_description">与你的 VRChat 世界保持紧密联系。管理个人资料、紧跟好友动态、绝不错过任何新鲜事——一切尽在你的 Android 设备中。</string>
+    <string name="onboarding_permissions_title">需要允许权限</string>
+    <string name="onboarding_permissions_description">启用设备通知，以实时获取好友动态与活动提醒。</string>
     <!-- Two Auth -->
     <string name="auth_text_email">输入发送到您电子邮件的代码</string>
     <string name="auth_text_app">输入您身份验证应用中的代码</string>
@@ -58,9 +57,9 @@
     <!-- Search -->
     <string name="search_text_result">搜索结果：</string>
     <string name="search_filter_label_count">数量</string>
-    <string name="search_filter_label_platform">Platform</string>
-    <string name="search_filter_label_content_gating">Content Gating</string>
-    <string name="search_filter_label_performance_rank">Performance Rank</string>
+    <string name="search_filter_label_platform">平台</string>
+    <string name="search_filter_label_content_gating">内容分级</string>
+    <string name="search_filter_label_performance_rank">性能等级</string>
     <string name="copy_id_label">复制 ID</string>
     <string name="copied_toast">成功复制 %1$s 的 ID</string>
     <string name="search_filter_button_reset">重置</string>
@@ -95,8 +94,8 @@
     <string name="world_title_favorites">收藏人数</string>
     <string name="world_title_capacity">推荐人数</string>
     <string name="world_title_occupants">地图内在线人数</string>
-    <string name="world_title_time_spent">Time Spent</string>
-    <string name="world_description_no_data_time_spent">No data available.</string>
+    <string name="world_title_time_spent">游玩时长</string>
+    <string name="world_description_no_data_time_spent">无可用数据</string>
     <string name="world_title_publication_date">正式公开于</string>
     <string name="world_title_heat">热度</string>
     <string name="world_title_popularity">知名度</string>
@@ -241,11 +240,11 @@
     <string name="misc_exit_toast_label">再次按下以退出。</string>
     <string name="misc_no_premium_subscription">此功能需要您有活跃的 VRC+ 订阅</string>
     <string name="global_app_default_loading_text">初始化...</string>
-    <string name="generic_text_public">Public</string>
+    <string name="generic_text_public">公开</string>
     <string name="generic_text_private">私人</string>
     <string name="generic_text_upload">上传</string>
     <string name="generic_text_cancel">取消</string>
-    <string name="generic_text_ok">OK</string>
+    <string name="generic_text_ok">确认</string>
     <!-- User -->
     <string name="user_overlay_friend_add">添加好友</string>
     <string name="user_overlay_friend_remove">移除好友</string>
@@ -330,6 +329,11 @@
     <string name="loading_text_items">加载物品中…</string>
     <string name="loading_text_favorites">加载收藏中…</string>
     <string name="loading_text_notifications">加载通知中…</string>
+
+    <string name="cache_updating_friends">正在更新好友列表…</string>
+    <string name="cache_updating_profile">正在更新个人资料…</string>
+    <string name="cache_updating_recent">正在更新最近访问…</string>
+    <string name="cache_updating_favorites">正在更新收藏…</string>
     <!-- Theming -->
     <string name="theme_page_title">主题</string>
     <string name="theme_page_minimalist_mode_text">简约模式</string>
@@ -360,10 +364,10 @@
     <string name="advanced_page_section_database">数据库</string>
     <string name="advanced_page_database_delete">删除数据库</string>
     <string name="advanced_page_database_delete_description">删除负责存储数据的内部数据库</string>
-    <string name="advanced_page_section_testing">Testing</string>
-    <string name="advanced_page_reset_onboarding">Reset Onboarding State</string>
-    <string name="advanced_page_reset_onboarding_description">Shows onboarding again when the app starts</string>
-    <string name="advanced_page_reset_onboarding_toast">Onboarding state reset.</string>
+    <string name="advanced_page_section_testing">测试中</string>
+    <string name="advanced_page_reset_onboarding">重置新手引导状态</string>
+    <string name="advanced_page_reset_onboarding_description">当app启动时再次显示新手教程</string>
+    <string name="advanced_page_reset_onboarding_toast">新手引导状态已重置。</string>
     <!-- Database -->
     <string name="database_page_title">数据库和统计信息</string>
     <string name="database_page_section_statistics">统计数据</string>
@@ -420,5 +424,5 @@
     <string name="image_preview_dialog_title">预览</string>
     <string name="image_preview_toast_picture_saved">图片已保存。</string>
     <string name="image_preview_toast_picture_save_failed">无法保存图片。</string>
-    <string name="activity_peek_no_url_handler">No app available to open the URL.</string>
+    <string name="activity_peek_no_url_handler">未找到可打开此链接的应用。</string>
 </resources>

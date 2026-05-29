@@ -288,11 +288,7 @@ class FeedScreen : Screen {
 
         val state by model.state.collectAsState()
 
-        when (state) {
-            is FeedScreenModel.FeedState.Loading -> LoadingIndicatorScreen().Content()
-            is FeedScreenModel.FeedState.Result -> ShowScreen(model)
-            else -> {}
-        }
+        ShowScreen(model)
     }
 
     @Composable

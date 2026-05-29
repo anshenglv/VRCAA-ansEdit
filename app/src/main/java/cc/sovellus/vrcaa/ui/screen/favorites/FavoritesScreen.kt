@@ -51,6 +51,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.screen.uniqueScreenKey
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import cc.sovellus.vrcaa.App
 import cc.sovellus.vrcaa.R
 import cc.sovellus.vrcaa.api.vrchat.http.interfaces.IFavorites.FavoriteType
 import cc.sovellus.vrcaa.manager.FavoriteManager
@@ -77,7 +78,8 @@ class FavoritesScreen : Screen {
         val state by model.state.collectAsState()
 
         when (state) {
-            is FavoriteState.Loading -> LoadingIndicatorScreen().Content()
+            is FavoriteState.Loading -> {App.setLoadingText(R.string.cache_updating_favorites)
+                LoadingIndicatorScreen().Content() }
             is FavoriteState.Result -> ShowScreen(model)
             else -> {}
         }

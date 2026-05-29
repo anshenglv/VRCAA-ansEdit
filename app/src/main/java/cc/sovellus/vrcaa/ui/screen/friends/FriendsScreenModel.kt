@@ -37,7 +37,7 @@ class FriendsScreenModel : StateScreenModel<FriendsState>(FriendsState.Init) {
     var currentIndex = mutableIntStateOf(0)
 
     private val cacheListener = object : CacheManager.CacheListener {
-        override fun startCacheRefresh() {
+        override fun startCacheRefresh(refreshFavorites: Boolean) {
             mutableState.value = FriendsState.Loading
         }
 

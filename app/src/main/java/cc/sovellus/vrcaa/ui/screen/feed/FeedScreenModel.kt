@@ -32,7 +32,7 @@ class FeedScreenModel : StateScreenModel<FeedScreenModel.FeedState>(FeedState.In
     val feed: StateFlow<List<FeedManager.Feed>> = FeedManager.feedState
 
     private val cacheListener = object : CacheManager.CacheListener {
-        override fun startCacheRefresh() {
+        override fun startCacheRefresh(refreshFavorites: Boolean) {
             mutableState.value = FeedState.Loading
         }
 
