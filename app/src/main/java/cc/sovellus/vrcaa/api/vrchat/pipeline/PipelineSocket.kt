@@ -69,7 +69,7 @@ class PipelineSocket(
     }
 
     private lateinit var socket: WebSocket
-    private var shouldReconnect: Boolean = false
+    private var shouldReconnect: Boolean = true
     private var gson = Gson()
 
     interface SocketListener {
