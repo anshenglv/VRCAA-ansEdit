@@ -174,7 +174,7 @@ class DatabaseScreen : Screen {
                             supportingContent = { Text(stringResource(R.string.database_page_recovery_restore_description)) },
                             modifier = Modifier.clickable(
                                 onClick = {
-                                    restoreLauncher.launch(arrayOf("application/octet-stream"))
+                                    restoreLauncher.launch(arrayOf("*/*"))
                                 }
                             )
                         )
