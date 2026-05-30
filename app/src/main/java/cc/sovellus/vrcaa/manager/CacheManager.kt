@@ -80,7 +80,7 @@ object CacheManager : BaseManager<CacheManager.CacheListener>() {
         recentWorldsStateFlow.value = emptyList()
         recommendedWorldsStateFlow.value = emptyList()
 
-        App.setLoadingText(R.string.global_app_default_loading_text)
+        //App.setLoadingText(R.string.global_app_default_loading_text)
 
         val user = async { api.auth.fetchCurrentUser() }
 

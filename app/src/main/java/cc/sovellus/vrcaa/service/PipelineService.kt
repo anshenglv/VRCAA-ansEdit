@@ -479,7 +479,7 @@ class PipelineService : Service(), CoroutineScope {
                     pipeline.connect()
                 }
             }
-            CacheManager.buildCache(refreshFavorites = true)
+            CacheManager.buildCache()
         }
 
         return START_STICKY
