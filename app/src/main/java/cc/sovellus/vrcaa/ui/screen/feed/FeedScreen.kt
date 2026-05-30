@@ -16,14 +16,27 @@
 
 package cc.sovellus.vrcaa.ui.screen.feed
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -44,234 +57,268 @@ import cc.sovellus.vrcaa.ui.components.layout.FeedItem
 import cc.sovellus.vrcaa.ui.screen.misc.LoadingIndicatorScreen
 import cc.sovellus.vrcaa.ui.screen.profile.UserProfileScreen
 import cc.sovellus.vrcaa.ui.screen.world.WorldScreen
+import kotlinx.coroutines.launch
 
 @Composable
 fun FeedList(feed: List<FeedManager.Feed>, filter: Boolean = false) {
     val navigator = LocalNavigator.currentOrThrow
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
 
-    LazyColumn(
-        Modifier
-            .fillMaxSize()
-            .padding(1.dp),
-        state = rememberLazyListState()
+    val showButton by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex > 0
+        }
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize()
     ) {
-        items(feed.reversed())
-        { item ->
-            when (item.type) {
-                FeedManager.FeedType.FRIEND_FEED_ONLINE -> {
-                    val text = buildAnnotatedString {
-                        append(item.friendName)
-                        append(" ")
-                        withStyle(style = SpanStyle(color = Color.Gray)) {
-                            append(stringResource(R.string.feed_online_text))
-                        }
-                    }
-                    FeedItem(
-                        text = text,
-                        friendPictureUrl = item.friendPictureUrl,
-                        feedTimestamp = item.feedTimestamp,
-                        resourceStringTitle = R.string.feed_online_label,
-                        onClick = {
-                            if (filter) {
-                                navigator.push(UserProfileScreen(item.friendId))
-                            } else {
-                                navigator.parent?.parent?.push(UserProfileScreen(item.friendId))
+        LazyColumn(
+            Modifier
+                .fillMaxSize()
+                .padding(1.dp),
+            state = listState
+        ) {
+            items(feed.reversed())
+            { item ->
+                when (item.type) {
+                    FeedManager.FeedType.FRIEND_FEED_ONLINE -> {
+                        val text = buildAnnotatedString {
+                            append(item.friendName)
+                            append(" ")
+                            withStyle(style = SpanStyle(color = Color.Gray)) {
+                                append(stringResource(R.string.feed_online_text))
                             }
                         }
-                    )
-                }
+                        FeedItem(
+                            text = text,
+                            friendPictureUrl = item.friendPictureUrl,
+                            feedTimestamp = item.feedTimestamp,
+                            resourceStringTitle = R.string.feed_online_label,
+                            onClick = {
+                                if (filter) {
+                                    navigator.push(UserProfileScreen(item.friendId))
+                                } else {
+                                    navigator.parent?.parent?.push(UserProfileScreen(item.friendId))
+                                }
+                            }
+                        )
+                    }
 
-                FeedManager.FeedType.FRIEND_FEED_OFFLINE -> {
-                    val text = buildAnnotatedString {
-                        append(item.friendName)
-                        append(" ")
-                        withStyle(style = SpanStyle(color = Color.Gray)) {
-                            append(stringResource(R.string.feed_offline_text))
-                        }
-                    }
-                    FeedItem(
-                        text = text,
-                        friendPictureUrl = item.friendPictureUrl,
-                        feedTimestamp = item.feedTimestamp,
-                        resourceStringTitle = R.string.feed_offline_label,
-                        onClick = {
-                            if (filter) {
-                                navigator.push(UserProfileScreen(item.friendId))
-                            } else {
-                                navigator.parent?.parent?.push(UserProfileScreen(item.friendId))
+                    FeedManager.FeedType.FRIEND_FEED_OFFLINE -> {
+                        val text = buildAnnotatedString {
+                            append(item.friendName)
+                            append(" ")
+                            withStyle(style = SpanStyle(color = Color.Gray)) {
+                                append(stringResource(R.string.feed_offline_text))
                             }
                         }
-                    )
-                }
+                        FeedItem(
+                            text = text,
+                            friendPictureUrl = item.friendPictureUrl,
+                            feedTimestamp = item.feedTimestamp,
+                            resourceStringTitle = R.string.feed_offline_label,
+                            onClick = {
+                                if (filter) {
+                                    navigator.push(UserProfileScreen(item.friendId))
+                                } else {
+                                    navigator.parent?.parent?.push(UserProfileScreen(item.friendId))
+                                }
+                            }
+                        )
+                    }
 
-                FeedManager.FeedType.FRIEND_FEED_LOCATION -> {
-                    val text = buildAnnotatedString {
-                        append(item.friendName)
-                        append(" ")
-                        withStyle(style = SpanStyle(color = Color.Gray)) {
-                            append(stringResource(R.string.feed_location_text))
-                        }
-                        append(" ")
-                        append(item.travelDestination)
-                    }
-                    FeedItem(
-                        text = text,
-                        friendPictureUrl = item.friendPictureUrl,
-                        feedTimestamp = item.feedTimestamp,
-                        resourceStringTitle = R.string.feed_location_label,
-                        onClick = {
-                            if (filter) {
-                                navigator.push(WorldScreen(item.worldId))
-                            } else {
-                                navigator.parent?.parent?.push(WorldScreen(item.worldId))
+                    FeedManager.FeedType.FRIEND_FEED_LOCATION -> {
+                        val text = buildAnnotatedString {
+                            append(item.friendName)
+                            append(" ")
+                            withStyle(style = SpanStyle(color = Color.Gray)) {
+                                append(stringResource(R.string.feed_location_text))
                             }
+                            append(" ")
+                            append(item.travelDestination)
                         }
-                    )
-                }
+                        FeedItem(
+                            text = text,
+                            friendPictureUrl = item.friendPictureUrl,
+                            feedTimestamp = item.feedTimestamp,
+                            resourceStringTitle = R.string.feed_location_label,
+                            onClick = {
+                                if (filter) {
+                                    navigator.push(WorldScreen(item.worldId))
+                                } else {
+                                    navigator.parent?.parent?.push(WorldScreen(item.worldId))
+                                }
+                            }
+                        )
+                    }
 
-                FeedManager.FeedType.FRIEND_FEED_STATUS -> {
-                    val text = buildAnnotatedString {
-                        append(item.friendName)
-                        append(" ")
-                        withStyle(style = SpanStyle(color = Color.Gray)) {
-                            append(stringResource(R.string.feed_status_text))
-                        }
-                        append(" ")
-                        append(item.friendStatus.toString())
-                    }
-                    FeedItem(
-                        text = text,
-                        friendPictureUrl = item.friendPictureUrl,
-                        feedTimestamp = item.feedTimestamp,
-                        resourceStringTitle = R.string.feed_status_label,
-                        onClick = {
-                            if (filter) {
-                                navigator.push(UserProfileScreen(item.friendId))
-                            } else {
-                                navigator.parent?.parent?.push(UserProfileScreen(item.friendId))
+                    FeedManager.FeedType.FRIEND_FEED_STATUS -> {
+                        val text = buildAnnotatedString {
+                            append(item.friendName)
+                            append(" ")
+                            withStyle(style = SpanStyle(color = Color.Gray)) {
+                                append(stringResource(R.string.feed_status_text))
                             }
+                            append(" ")
+                            append(item.friendStatus.toString())
                         }
-                    )
-                }
+                        FeedItem(
+                            text = text,
+                            friendPictureUrl = item.friendPictureUrl,
+                            feedTimestamp = item.feedTimestamp,
+                            resourceStringTitle = R.string.feed_status_label,
+                            onClick = {
+                                if (filter) {
+                                    navigator.push(UserProfileScreen(item.friendId))
+                                } else {
+                                    navigator.parent?.parent?.push(UserProfileScreen(item.friendId))
+                                }
+                            }
+                        )
+                    }
 
-                FeedManager.FeedType.FRIEND_FEED_ADDED -> {
-                    val text = buildAnnotatedString {
-                        append(item.friendName)
-                        append(" ")
-                        withStyle(style = SpanStyle(color = Color.Gray)) {
-                            append(stringResource(R.string.feed_added_text))
-                        }
-                    }
-                    FeedItem(
-                        text = text,
-                        friendPictureUrl = item.friendPictureUrl,
-                        feedTimestamp = item.feedTimestamp,
-                        resourceStringTitle = R.string.feed_added_label,
-                        onClick = {
-                            if (filter) {
-                                navigator.push(UserProfileScreen(item.friendId))
-                            } else {
-                                navigator.parent?.parent?.push(UserProfileScreen(item.friendId))
+                    FeedManager.FeedType.FRIEND_FEED_ADDED -> {
+                        val text = buildAnnotatedString {
+                            append(item.friendName)
+                            append(" ")
+                            withStyle(style = SpanStyle(color = Color.Gray)) {
+                                append(stringResource(R.string.feed_added_text))
                             }
                         }
-                    )
-                }
+                        FeedItem(
+                            text = text,
+                            friendPictureUrl = item.friendPictureUrl,
+                            feedTimestamp = item.feedTimestamp,
+                            resourceStringTitle = R.string.feed_added_label,
+                            onClick = {
+                                if (filter) {
+                                    navigator.push(UserProfileScreen(item.friendId))
+                                } else {
+                                    navigator.parent?.parent?.push(UserProfileScreen(item.friendId))
+                                }
+                            }
+                        )
+                    }
 
-                FeedManager.FeedType.FRIEND_FEED_REMOVED -> {
-                    val text = buildAnnotatedString {
-                        append(item.friendName)
-                        append(" ")
-                        withStyle(style = SpanStyle(color = Color.Gray)) {
-                            append(stringResource(R.string.feed_removed_text))
-                        }
-                    }
-                    FeedItem(
-                        text = text,
-                        friendPictureUrl = item.friendPictureUrl,
-                        feedTimestamp = item.feedTimestamp,
-                        resourceStringTitle = R.string.feed_removed_label,
-                        onClick = {
-                            if (filter) {
-                                navigator.push(UserProfileScreen(item.friendId))
-                            } else {
-                                navigator.parent?.parent?.push(UserProfileScreen(item.friendId))
+                    FeedManager.FeedType.FRIEND_FEED_REMOVED -> {
+                        val text = buildAnnotatedString {
+                            append(item.friendName)
+                            append(" ")
+                            withStyle(style = SpanStyle(color = Color.Gray)) {
+                                append(stringResource(R.string.feed_removed_text))
                             }
                         }
-                    )
-                }
+                        FeedItem(
+                            text = text,
+                            friendPictureUrl = item.friendPictureUrl,
+                            feedTimestamp = item.feedTimestamp,
+                            resourceStringTitle = R.string.feed_removed_label,
+                            onClick = {
+                                if (filter) {
+                                    navigator.push(UserProfileScreen(item.friendId))
+                                } else {
+                                    navigator.parent?.parent?.push(UserProfileScreen(item.friendId))
+                                }
+                            }
+                        )
+                    }
 
-                FeedManager.FeedType.FRIEND_FEED_FRIEND_REQUEST -> {
-                    val text = buildAnnotatedString {
-                        append(item.friendName)
-                        append(" ")
-                        withStyle(style = SpanStyle(color = Color.Gray)) {
-                            append(stringResource(R.string.feed_friend_request_text))
-                        }
-                    }
-                    FeedItem(
-                        text = text,
-                        friendPictureUrl = item.friendPictureUrl,
-                        feedTimestamp = item.feedTimestamp,
-                        resourceStringTitle = R.string.feed_friend_request_label,
-                        onClick = {
-                            if (filter) {
-                                navigator.push(UserProfileScreen(item.friendId))
-                            } else {
-                                navigator.parent?.parent?.push(UserProfileScreen(item.friendId))
+                    FeedManager.FeedType.FRIEND_FEED_FRIEND_REQUEST -> {
+                        val text = buildAnnotatedString {
+                            append(item.friendName)
+                            append(" ")
+                            withStyle(style = SpanStyle(color = Color.Gray)) {
+                                append(stringResource(R.string.feed_friend_request_text))
                             }
                         }
-                    )
-                }
+                        FeedItem(
+                            text = text,
+                            friendPictureUrl = item.friendPictureUrl,
+                            feedTimestamp = item.feedTimestamp,
+                            resourceStringTitle = R.string.feed_friend_request_label,
+                            onClick = {
+                                if (filter) {
+                                    navigator.push(UserProfileScreen(item.friendId))
+                                } else {
+                                    navigator.parent?.parent?.push(UserProfileScreen(item.friendId))
+                                }
+                            }
+                        )
+                    }
 
-                FeedManager.FeedType.FRIEND_FEED_AVATAR -> {
-                    val text = buildAnnotatedString {
-                        append(item.friendName)
-                        append(" ")
-                        withStyle(style = SpanStyle(color = Color.Gray)) {
-                            append(stringResource(R.string.feed_friend_avatar_text))
-                        }
-                        append(" ")
-                        append(item.avatarName)
-                    }
-                    FeedItem(
-                        text = text,
-                        friendPictureUrl = item.friendPictureUrl,
-                        feedTimestamp = item.feedTimestamp,
-                        resourceStringTitle = R.string.feed_friend_avatar_label,
-                        onClick = {
-                            if (filter) {
-                                navigator.push(UserProfileScreen(item.friendId))
-                            } else {
-                                navigator.parent?.parent?.push(UserProfileScreen(item.friendId))
+                    FeedManager.FeedType.FRIEND_FEED_AVATAR -> {
+                        val text = buildAnnotatedString {
+                            append(item.friendName)
+                            append(" ")
+                            withStyle(style = SpanStyle(color = Color.Gray)) {
+                                append(stringResource(R.string.feed_friend_avatar_text))
                             }
+                            append(" ")
+                            append(item.avatarName)
                         }
-                    )
-                }
+                        FeedItem(
+                            text = text,
+                            friendPictureUrl = item.friendPictureUrl,
+                            feedTimestamp = item.feedTimestamp,
+                            resourceStringTitle = R.string.feed_friend_avatar_label,
+                            onClick = {
+                                if (filter) {
+                                    navigator.push(UserProfileScreen(item.friendId))
+                                } else {
+                                    navigator.parent?.parent?.push(UserProfileScreen(item.friendId))
+                                }
+                            }
+                        )
+                    }
 
-                FeedManager.FeedType.FRIEND_FEED_USERNAME_CHANGE -> {
-                    val text = buildAnnotatedString {
-                        append(FriendManager.getFriend(item.friendId)?.displayName)
-                        append(" ")
-                        withStyle(style = SpanStyle(color = Color.Gray)) {
-                            append(stringResource(R.string.feed_friend_username_changed_text))
-                        }
-                        append(" ")
-                        append(item.friendName)
-                    }
-                    FeedItem(
-                        text = text,
-                        friendPictureUrl = item.friendPictureUrl,
-                        feedTimestamp = item.feedTimestamp,
-                        resourceStringTitle = R.string.feed_friend_username_changed_label,
-                        onClick = {
-                            if (filter) {
-                                navigator.push(UserProfileScreen(item.friendId))
-                            } else {
-                                navigator.parent?.parent?.push(UserProfileScreen(item.friendId))
+                    FeedManager.FeedType.FRIEND_FEED_USERNAME_CHANGE -> {
+                        val text = buildAnnotatedString {
+                            append(FriendManager.getFriend(item.friendId)?.displayName)
+                            append(" ")
+                            withStyle(style = SpanStyle(color = Color.Gray)) {
+                                append(stringResource(R.string.feed_friend_username_changed_text))
                             }
+                            append(" ")
+                            append(item.friendName)
                         }
-                    )
+                        FeedItem(
+                            text = text,
+                            friendPictureUrl = item.friendPictureUrl,
+                            feedTimestamp = item.feedTimestamp,
+                            resourceStringTitle = R.string.feed_friend_username_changed_label,
+                            onClick = {
+                                if (filter) {
+                                    navigator.push(UserProfileScreen(item.friendId))
+                                } else {
+                                    navigator.parent?.parent?.push(UserProfileScreen(item.friendId))
+                                }
+                            }
+                        )
+                    }
                 }
+            }
+        }
+
+        AnimatedVisibility(
+            visible = showButton,
+            enter = fadeIn(),
+            exit = fadeOut(),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(bottom = 16.dp, end = 16.dp)
+        ) {
+            FloatingActionButton(
+                onClick = {
+                    coroutineScope.launch {
+                        listState.animateScrollToItem(0)
+                    }
+                },
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.secondary
+            ) {
+                Icon(imageVector = Icons.Filled.ArrowUpward, contentDescription = null)
             }
         }
     }
