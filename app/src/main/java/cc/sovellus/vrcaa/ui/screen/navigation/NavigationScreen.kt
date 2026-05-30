@@ -205,13 +205,9 @@ class NavigationScreen : Screen {
             var pressBackCounter by remember { mutableIntStateOf(0) }
 
             BackHandler(enabled = true, onBack = {
-                if (tabNavigator.current != HomeTab) {
-                    tabNavigator.current = HomeTab
-                } else {
-                    pressBackCounter++
-                }
 
-                if (tabNavigator.current == HomeTab) {
+                    pressBackCounter++
+
                     if (pressBackCounter == 1) {
                         Toast.makeText(
                             context,
@@ -223,7 +219,7 @@ class NavigationScreen : Screen {
                     if (pressBackCounter == 2) {
                         if (context is Activity) context.finish()
                     }
-                }
+
             })
             Box(modifier = Modifier.fillMaxSize()) {
                 Scaffold(
