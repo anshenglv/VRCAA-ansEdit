@@ -85,8 +85,7 @@ class NavigationScreenModel : ScreenModel {
     }
 
     private val cacheListener = object : CacheManager.CacheListener {
-        override fun endCacheRefresh(stage: CacheManager.Stage) {
-            if (stage == CacheManager.Stage.Profile)
+        override fun endCacheRefresh() {
                 getCurrentProfileValues()
         }
     }

@@ -16,7 +16,6 @@
 
 package cc.sovellus.vrcaa.manager
 
-import cc.sovellus.vrcaa.base.BaseManager
 import cc.sovellus.vrcaa.helper.StatusHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,15 +24,10 @@ import kotlinx.coroutines.flow.update
 import java.time.LocalDateTime
 import java.util.UUID
 
+object FeedManager {
 
-object FeedManager : BaseManager<FeedManager.FeedListener>() {
-
-    private const val MAX_FEED_ENTRIES = 1000
+    private const val MAX_FEED_ENTRIES = 200
     private var FEED_OFFSET = 0
-
-    interface FeedListener {
-        fun onReceiveUpdate(list: List<Feed>)
-    }
 
     enum class FeedType {
         FRIEND_FEED_ONLINE,
@@ -66,12 +60,13 @@ object FeedManager : BaseManager<FeedManager.FeedListener>() {
 
     private val hasMoreFeedAvailableFlow = MutableStateFlow(false)
     val hasMoreFeedAvailable: StateFlow<Boolean> = hasMoreFeedAvailableFlow.asStateFlow()
+
     private val feedStateFlow = MutableStateFlow<List<Feed>>(emptyList())
     val feedState: StateFlow<List<Feed>> = feedStateFlow.asStateFlow()
 
     fun loadFeed() {
         val feed = DatabaseManager.readFeeds(MAX_FEED_ENTRIES, FEED_OFFSET)
-        if (feed.size < MAX_FEED_ENTRIES) {
+        if (feed.size < MAX_FEED_ENTRIES && feed.isNotEmpty()) {
             hasMoreFeedAvailableFlow.update { false }
         }
         feedStateFlow.update { current -> current + feed }
@@ -87,9 +82,5 @@ object FeedManager : BaseManager<FeedManager.FeedListener>() {
     fun addFeed(feed: Feed) {
         feedStateFlow.update { current -> listOf(feed) + current }
         DatabaseManager.writeFeed(feed)
-        val snapshot = feedStateFlow.value
-        getListeners().forEach { listener ->
-            listener.onReceiveUpdate(snapshot)
-        }
     }
 }
