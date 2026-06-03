@@ -36,7 +36,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -66,7 +65,7 @@ import cc.sovellus.vrcaa.ui.screen.world.WorldScreen
 import kotlinx.coroutines.launch
 
 @Composable
-fun FeedList(feed: List<FeedManager.Feed>, filter: Boolean = false, hasMore: Boolean = false, onLoadMore: () -> Unit = {}) {
+fun FeedList(feed: List<FeedManager.Feed>, filter: Boolean = false, hasMore: Boolean = false) {
     val navigator = LocalNavigator.currentOrThrow
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -74,27 +73,6 @@ fun FeedList(feed: List<FeedManager.Feed>, filter: Boolean = false, hasMore: Boo
     val showButton by remember {
         derivedStateOf {
             listState.firstVisibleItemIndex > 0
-        }
-    }
-
-    // 监听滚动到底部自动加载更多
-    val shouldLoadMore by remember {
-        derivedStateOf {
-            val layoutInfo = listState.layoutInfo
-            val totalItemsCount = layoutInfo.totalItemsCount
-            val lastVisibleIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-
-            hasMore &&
-                    totalItemsCount > 0 &&
-                    lastVisibleIndex >= totalItemsCount - 1 &&
-                    feed.isNotEmpty()
-        }
-    }
-
-    // 自动加载更多
-    LaunchedEffect(shouldLoadMore) {
-        if (shouldLoadMore) {
-            onLoadMore()
         }
     }
 
@@ -107,7 +85,8 @@ fun FeedList(feed: List<FeedManager.Feed>, filter: Boolean = false, hasMore: Boo
                 .padding(1.dp),
             state = listState
         ) {
-            items(feed) { item ->
+            items(feed)
+            { item ->
                 when (item.type) {
                     FeedManager.FeedType.FRIEND_FEED_ONLINE -> {
                         val text = buildAnnotatedString {
@@ -325,6 +304,21 @@ fun FeedList(feed: List<FeedManager.Feed>, filter: Boolean = false, hasMore: Boo
                     }
                 }
             }
+            if (hasMore) {
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(top = 2.dp, bottom = 2.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Button({
+                            FeedManager.loadFeed()
+                        }) {
+                            Text(stringResource(R.string.search_button_more))
+                        }
+                    }
+                }
+            }
         }
 
         AnimatedVisibility(
@@ -368,14 +362,6 @@ class FeedScreen : Screen {
     fun ShowScreen(model: FeedScreenModel) {
         val feed = model.feed.collectAsState()
         val hasMore = model.hasMore.collectAsState()
-
-        FeedList(
-            feed = feed.value,
-            hasMore = hasMore.value,
-            onLoadMore = {
-                // 调用 FeedManager 加载更多数据
-                FeedManager.loadFeed()
-            }
-        )
+        FeedList(feed.value, hasMore = hasMore.value)
     }
 }

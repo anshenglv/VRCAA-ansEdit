@@ -32,6 +32,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -44,8 +46,6 @@ import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cc.sovellus.vrcaa.R
 import cc.sovellus.vrcaa.manager.FeedManager
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 class FeedSearchScreen : Screen {
 
@@ -57,8 +57,20 @@ class FeedSearchScreen : Screen {
         val navigator: Navigator = LocalNavigator.currentOrThrow
 
         val input = remember { mutableStateOf("") }
-        val filteredFeedStateFlow = remember { MutableStateFlow(listOf<FeedManager.Feed>()) }
-        val filteredFeed = filteredFeedStateFlow.asStateFlow()
+        val feedState by FeedManager.feedState.collectAsState()
+        val hasMoreAndSearch by FeedManager.hasMoreFeedAvailable.collectAsState()
+        val searchText = remember { mutableStateOf("") }
+        val hasMore by remember { derivedStateOf { hasMoreAndSearch && searchText.value.isNotEmpty() } }
+
+        val filteredFeed = remember(searchText.value, feedState) {
+            if (searchText.value.isEmpty()) {
+                listOf()
+            } else {
+                feedState.filter { feed ->
+                    feed.friendName.contains(searchText.value, ignoreCase = true) || (feed.travelDestination.contains(searchText.value, ignoreCase = true) && feed.type == FeedManager.FeedType.FRIEND_FEED_LOCATION) || (feed.avatarName.contains(searchText.value, ignoreCase = true) && feed.type == FeedManager.FeedType.FRIEND_FEED_AVATAR)
+                }
+            }
+        }
 
         Scaffold { padding ->
             SearchBar(
@@ -93,9 +105,7 @@ class FeedSearchScreen : Screen {
                             }
                         },
                         onSearch = {
-                            filteredFeedStateFlow.value = FeedManager.feedState.value.filter { feed ->
-                                feed.friendName.contains(input.value, ignoreCase = true) || (feed.travelDestination.contains(input.value, ignoreCase = true) && feed.type == FeedManager.FeedType.FRIEND_FEED_LOCATION) || (feed.avatarName.contains(input.value, ignoreCase = true) && feed.type == FeedManager.FeedType.FRIEND_FEED_AVATAR)
-                            }
+                            searchText.value = input.value
                         }
                     )
                 },
@@ -109,8 +119,7 @@ class FeedSearchScreen : Screen {
                     color = MaterialTheme.colorScheme.background,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    val feed = filteredFeed.collectAsState()
-                    FeedList(feed.value, true)
+                    FeedList(filteredFeed, true, hasMore)
                 }
             }
         }
