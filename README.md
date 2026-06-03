@@ -2,10 +2,11 @@
 
 >[!IMPORTANT]
 >这份README属于分支源的作者，下面的链接同样来自原仓库。这里的所有修改并不代表作者的意见！
->
+> 
 >This README belongs to the original author, and the link below come from original repository. All modifications here do not represent the opinions of the author!
 
-VRChat Android Assistant is still under development, you should report any potential issues [here](https://github.com/Nyabsi/VRCAA/issues).
+>[!TIP]
+>VRChat Android Assistant is still under development, you should report any potential issues [here](https://github.com/Nyabsi/VRCAA/issues).
 
 VRChat Android Assistant offers a convenient solution for managing your VRChat experience on the go. With this tool, users can efficiently handle profile customization, friend interactions, and stay informed about the latest events, all from their Android device, without relying on the VRChat game client.
 
