@@ -72,6 +72,9 @@ object CacheManager : BaseManager<CacheManager.CacheListener>() {
         isCacheBuilt.exchange(false)
         getListeners().forEach { it.startCacheRefresh() }
 
+        isCacheBuilt.exchange(false)
+        getListeners().forEach { it.startCacheRefresh() }
+
         val user = async { api.auth.fetchCurrentUser() }
 
         val onlineFriends = async { api.friends.fetchFriends(false) }
