@@ -16,6 +16,9 @@
 
 package cc.sovellus.vrcaa.ui.screen.feed
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -30,6 +33,8 @@ import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -60,7 +65,7 @@ import cc.sovellus.vrcaa.ui.screen.world.WorldScreen
 import kotlinx.coroutines.launch
 
 @Composable
-fun FeedList(feed: List<FeedManager.Feed>, filter: Boolean = false) {
+fun FeedList(feed: List<FeedManager.Feed>, filter: Boolean = false, hasMore: Boolean = false) {
     val navigator = LocalNavigator.currentOrThrow
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -80,7 +85,7 @@ fun FeedList(feed: List<FeedManager.Feed>, filter: Boolean = false) {
                 .padding(1.dp),
             state = listState
         ) {
-            items(feed.reversed())
+            items(feed)
             { item ->
                 when (item.type) {
                     FeedManager.FeedType.FRIEND_FEED_ONLINE -> {
@@ -299,6 +304,21 @@ fun FeedList(feed: List<FeedManager.Feed>, filter: Boolean = false) {
                     }
                 }
             }
+            if (hasMore) {
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(top = 2.dp, bottom = 2.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Button({
+                            FeedManager.loadFeed()
+                        }) {
+                            Text(stringResource(R.string.search_button_more))
+                        }
+                    }
+                }
+            }
         }
 
         AnimatedVisibility(
@@ -341,6 +361,7 @@ class FeedScreen : Screen {
     @Composable
     fun ShowScreen(model: FeedScreenModel) {
         val feed = model.feed.collectAsState()
-        FeedList(feed.value)
+        val hasMore = model.hasMore.collectAsState()
+        FeedList(feed.value, hasMore = hasMore.value)
     }
 }
