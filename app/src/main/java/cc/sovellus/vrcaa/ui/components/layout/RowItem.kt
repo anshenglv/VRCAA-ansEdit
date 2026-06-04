@@ -55,7 +55,7 @@ fun RowItem(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp
         ),
-        modifier = Modifier
+        modifier = Modifier.padding(start = 10.dp,end = 10.dp)
             .heightIn(100.dp, maxItemHeight)
             .widthIn(133.dp, maxItemWidth)
             .aspectRatio(4f / 3f)

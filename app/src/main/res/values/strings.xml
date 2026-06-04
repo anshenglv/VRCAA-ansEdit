@@ -240,6 +240,12 @@
     <string name="feed_friend_avatar_text">changed their avatar to</string>
     <string name="feed_friend_username_changed_label">Username Change</string>
     <string name="feed_friend_username_changed_text">changed their username to</string>
+    <string name="feed_filter_label">Filter</string>
+    <string name="feed_filter_label2">DataBase Filter</string>
+    <string name="feed_filter_friend_online_offline">Friend Online/Offline</string>
+    <string name="feed_filter_friend_location">Friend Location Change</string>
+    <string name="feed_filter_friend_status">Friend Status Change</string>
+    <string name="feed_filter_friend_avatar">Friend Avatar Change</string>
 
     <!-- About -->
 

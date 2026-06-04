@@ -80,6 +80,7 @@ fun ProfileCard(
             .height(270.dp)
             .widthIn(0.dp, 520.dp)
             .fillMaxWidth()
+            .padding(top = 16.dp)
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy((-50).dp),

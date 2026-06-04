@@ -184,7 +184,7 @@ class FavoritesScreen : Screen {
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight()
-                    .padding(start = 16.dp, end = 16.dp)
+                    .padding(0.dp)
             ) {
                 item {
                     when (model.currentIndex.intValue) {

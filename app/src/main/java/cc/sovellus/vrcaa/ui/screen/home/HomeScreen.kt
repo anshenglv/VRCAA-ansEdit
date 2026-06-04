@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.model.rememberNavigatorScreenModel
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.screen.uniqueScreenKey
@@ -83,7 +84,7 @@ class HomeScreen : Screen {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(top = 8.dp)
         ) {
             item {
                 val onlineFriends = friends.filter { it.platform != "web" && it.platform.isNotEmpty() }
@@ -92,7 +93,7 @@ class HomeScreen : Screen {
                         text = stringResource(R.string.home_active_friends),
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 4.dp)
+                        modifier = Modifier.padding(start = 16.dp,bottom = 4.dp)
                     )
                     LazyRow(
                         modifier = Modifier
@@ -107,20 +108,28 @@ class HomeScreen : Screen {
                         }
                     )
                 } else {
-                    HorizontalRow(
-                        title = stringResource(R.string.home_active_friends)
-                    ) {
-                        items(
-                            onlineFriends.sortedBy { StatusHelper.getStatusFromString(it.status) }
-                        ) { friend ->
-                            RoundedRowItem(
-                                name = friend.displayName,
-                                url = friend.userIcon.ifEmpty { friend.profilePicOverride.ifEmpty { friend.currentAvatarImageUrl } },
-                                status = friend.status,
-                                onClick = { navigator.parent?.parent?.push(UserProfileScreen(friend.id)) }
-                            )
+                    Text(
+                        text = stringResource(R.string.home_active_friends),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 24.sp,
+                        modifier = Modifier.padding(start = 16.dp, bottom = 4.dp)
+                    )
+
+                    LazyRow(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(0.dp),
+                        content = {
+                            items(onlineFriends.sortedBy { StatusHelper.getStatusFromString(it.status) }){ friend ->
+                                RoundedRowItem(
+                                    name = friend.displayName,
+                                    url = friend.userIcon.ifEmpty { friend.profilePicOverride.ifEmpty { friend.currentAvatarImageUrl } },
+                                    status = friend.status,
+                                    onClick = { navigator.parent?.parent?.push(UserProfileScreen(friend.id)) }
+                                )
+                            }
                         }
-                    }
+                    )
                 }
 
                 Spacer(modifier = Modifier.padding(4.dp))
@@ -130,7 +139,7 @@ class HomeScreen : Screen {
                         text = stringResource(R.string.home_recently_visited),
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 4.dp)
+                        modifier = Modifier.padding(start = 16.dp, bottom = 4.dp)
                     )
                     LazyRow(
                         modifier = Modifier
@@ -166,7 +175,7 @@ class HomeScreen : Screen {
                         text = stringResource(R.string.home_friend_locations),
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 4.dp)
+                        modifier = Modifier.padding(start = 16.dp, bottom = 4.dp)
                     )
                     LazyRow(
                         modifier = Modifier
@@ -207,7 +216,7 @@ class HomeScreen : Screen {
                         text = stringResource(R.string.home_curated_for_you),
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 4.dp)
+                        modifier = Modifier.padding(start = 16.dp, bottom = 4.dp)
                     )
                     LazyRow(
                         modifier = Modifier

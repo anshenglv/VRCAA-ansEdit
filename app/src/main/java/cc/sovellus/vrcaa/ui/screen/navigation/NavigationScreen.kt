@@ -32,6 +32,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.exclude
@@ -54,6 +55,7 @@ import androidx.compose.material.icons.filled.Cabin
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EmojiEmotions
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Menu
@@ -65,12 +67,15 @@ import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
+import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -129,6 +134,8 @@ import cc.sovellus.vrcaa.manager.FavoriteManager
 import cc.sovellus.vrcaa.ui.components.card.QuickMenuCard
 import cc.sovellus.vrcaa.ui.components.dialog.NoInternetDialog
 import cc.sovellus.vrcaa.ui.components.input.ComboInput
+import cc.sovellus.vrcaa.ui.components.misc.LimitedChipSelect
+import cc.sovellus.vrcaa.ui.components.misc.SearchFilterSection
 import cc.sovellus.vrcaa.ui.screen.avatars.AvatarsScreen
 import cc.sovellus.vrcaa.ui.screen.emojis.EmojisScreen
 import cc.sovellus.vrcaa.ui.screen.feed.FeedSearchScreen
@@ -195,6 +202,9 @@ class NavigationScreen : Screen {
         TabNavigator(tabs[0]) { tabNavigator ->
             val profileSheetState = rememberModalBottomSheetState()
             val profile = CacheManager.profile.collectAsState().value
+
+            val feedFilterSheetState = rememberModalBottomSheetState()
+            var showFeedFilterSheet by remember { mutableStateOf(false) }
 
             var isMenuExpanded by remember { mutableStateOf(false) }
             var showProfileSheet by remember { mutableStateOf(false) }
@@ -440,6 +450,15 @@ class NavigationScreen : Screen {
                                         modifier = Modifier.size(64.dp, 64.dp),
                                         onClick = {
                                             if (CacheManager.isBuilt()) {
+                                                showFeedFilterSheet = true
+                                            }
+                                        }) {
+                                        Icon(Icons.Filled.FilterList, contentDescription = null)
+                                    }
+                                    IconButton(
+                                        modifier = Modifier.size(64.dp, 64.dp),
+                                        onClick = {
+                                            if (CacheManager.isBuilt()) {
                                                 // ladies and gentlemen, we got 'em.
                                                 navigator.push(NotificationsScreen())
                                             }
@@ -485,6 +504,99 @@ class NavigationScreen : Screen {
                             .background(MaterialTheme.colorScheme.background)
                     ) {
                         CurrentTab()
+                    }
+
+                    if (showFeedFilterSheet) {
+                        ModalBottomSheet(
+                            onDismissRequest = {
+                                showFeedFilterSheet = false
+                            },
+                            sheetState = feedFilterSheetState
+                        ) {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentPadding = PaddingValues(
+                                    start = 16.dp,
+                                    end = 16.dp,
+                                    top = 8.dp,
+                                    bottom = 24.dp
+                                ),
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                item {
+                                    SearchFilterSection(
+                                        title = stringResource(R.string.feed_filter_label),
+                                        icon = Icons.Default.FilterList
+                                    ) {
+                                        LimitedChipSelect(
+                                            items = listOf(
+                                                stringResource(R.string.feed_filter_friend_online_offline),
+                                                stringResource(R.string.feed_filter_friend_location),
+                                                stringResource(R.string.feed_filter_friend_status),
+                                                stringResource(R.string.feed_filter_friend_avatar)
+                                            ),
+                                            selected = listOf(),
+                                            minSelected = 0,
+                                            maxSelected = 4,
+                                            onSelectedChange = { }
+                                        )
+                                    }
+                                    HorizontalDivider(
+                                        Modifier,
+                                        DividerDefaults.Thickness,
+                                        DividerDefaults.color
+                                    )
+                                    SearchFilterSection(
+                                        title = stringResource(R.string.feed_filter_label2),
+                                        icon = Icons.Default.WarningAmber
+                                    ) {
+                                        LimitedChipSelect(
+                                            items = listOf(
+                                                stringResource(R.string.feed_filter_friend_online_offline),
+                                                stringResource(R.string.feed_filter_friend_location),
+                                                stringResource(R.string.feed_filter_friend_status),
+                                                stringResource(R.string.feed_filter_friend_avatar)
+                                            ),
+                                            selected = listOf(),
+                                            minSelected = 0,
+                                            maxSelected = 4,
+                                            onSelectedChange = { }
+                                        )
+                                    }
+                                }
+
+                                item {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                    ) {
+                                        OutlinedButton(
+                                            modifier = Modifier.weight(1f),
+                                            onClick = {
+                                                // Reset functionality later
+                                            }
+                                        ) {
+                                            Text(stringResource(R.string.search_filter_button_reset))
+                                        }
+
+                                        Button(
+                                            modifier = Modifier.weight(1f),
+                                            onClick = {
+                                                scope.launch {
+                                                    feedFilterSheetState.hide()
+                                                }.invokeOnCompletion {
+                                                    if (!feedFilterSheetState.isVisible) {
+                                                        showFeedFilterSheet = false
+                                                    }
+                                                }
+                                            }
+                                        ) {
+                                            Text(stringResource(R.string.search_filter_button_apply))
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     if (showProfileSheet) {

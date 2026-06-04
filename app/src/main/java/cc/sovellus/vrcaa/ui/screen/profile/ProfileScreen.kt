@@ -72,7 +72,9 @@ class ProfileScreen : Screen {
     @Composable
     private fun RenderProfile(profile: User) {
         LazyColumn(
-            modifier = Modifier.padding(16.dp).fillMaxHeight(),
+            modifier = Modifier
+            .padding(start = 16.dp, end = 16.dp)
+            .fillMaxHeight(),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

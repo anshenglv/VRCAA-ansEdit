@@ -37,13 +37,13 @@ fun HorizontalRow(
         text = title,
         fontWeight = FontWeight.Bold,
         fontSize = 24.sp,
-        modifier = Modifier.padding(bottom = 4.dp)
+        modifier = Modifier.padding(start = 16.dp, bottom = 4.dp)
     )
 
     LazyRow(
         modifier = Modifier
             .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalArrangement = Arrangement.spacedBy((-10).dp),
         content = content
     )
 }

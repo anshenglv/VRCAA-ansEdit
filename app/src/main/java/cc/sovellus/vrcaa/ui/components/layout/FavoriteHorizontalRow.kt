@@ -48,7 +48,7 @@ fun FavoriteHorizontalRow(
             text = title,
             fontWeight = FontWeight.Bold,
             fontSize = 24.sp,
-            modifier = Modifier
+            modifier = Modifier.padding(start = 16.dp)
         )
 
         if (allowEdit) {
@@ -62,7 +62,7 @@ fun FavoriteHorizontalRow(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalArrangement = Arrangement.spacedBy((-10).dp),
         content = content
     )
 }
