@@ -20,6 +20,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -49,7 +50,8 @@ fun RoundedRowItem(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.clickable(
+        modifier = Modifier.padding(start = 12.dp, end = 12.dp)
+            .clickable(
             onClick = { onClick() }
         ).sizeIn(80.dp, 80.dp, 100.dp, 100.dp).aspectRatio(1f / 1f)
     ) {

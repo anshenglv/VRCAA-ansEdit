@@ -118,7 +118,7 @@ class HomeScreen : Screen {
                     LazyRow(
                         modifier = Modifier
                             .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(0.dp),
+                        horizontalArrangement = Arrangement.spacedBy((-24).dp),
                         content = {
                             items(onlineFriends.sortedBy { StatusHelper.getStatusFromString(it.status) }){ friend ->
                                 RoundedRowItem(
