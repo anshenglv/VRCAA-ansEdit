@@ -27,11 +27,13 @@ import androidx.core.os.bundleOf
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import cc.sovellus.vrcaa.App
+import cc.sovellus.vrcaa.R
 import cc.sovellus.vrcaa.activity.MainActivity
 import cc.sovellus.vrcaa.api.vrchat.http.HttpClient
 import cc.sovellus.vrcaa.manager.ApiManager.api
 import cc.sovellus.vrcaa.manager.CacheManager
 import cc.sovellus.vrcaa.manager.DatabaseManager
+import cc.sovellus.vrcaa.manager.FeedManager
 import cc.sovellus.vrcaa.manager.NotificationManager
 import cc.sovellus.vrcaa.service.PipelineService
 import kotlinx.coroutines.launch
@@ -57,6 +59,7 @@ class NavigationScreenModel : ScreenModel {
     val pronouns = mutableStateOf("")
 
     val notificationsCount = mutableIntStateOf(0)
+    val feedFilters = mutableStateListOf<String>()
 
     private val apiListener = object : HttpClient.SessionListener {
         override fun onSessionInvalidate() {
@@ -99,6 +102,20 @@ class NavigationScreenModel : ScreenModel {
                 notificationsCount.intValue = count
             }
         }
+
+        val savedFilters = FeedManager.filterState.value
+        val filterItems = listOf(
+            context.getString(R.string.feed_filter_friend_online_offline),
+            context.getString(R.string.feed_filter_friend_location),
+            context.getString(R.string.feed_filter_friend_status),
+            context.getString(R.string.feed_filter_friend_avatar)
+        )
+        savedFilters.forEach {
+            val index = it.toIntOrNull()
+            if (index != null && index < filterItems.size) {
+                feedFilters.add(filterItems[index])
+            }
+        }
     }
 
     fun addSearchHistory() {
@@ -113,6 +130,29 @@ class NavigationScreenModel : ScreenModel {
 
     fun clearSearchText() {
         searchText.value = ""
+    }
+
+    fun applyFeedFilters() {
+        val filterItems = listOf(
+            context.getString(R.string.feed_filter_friend_online_offline),
+            context.getString(R.string.feed_filter_friend_location),
+            context.getString(R.string.feed_filter_friend_status),
+            context.getString(R.string.feed_filter_friend_avatar)
+        )
+        val selectedIndices = feedFilters.map { filterItems.indexOf(it).toString() }.toSet()
+        FeedManager.updateFilters(selectedIndices)
+    }
+
+    fun resetFeedFilters() {
+        val filterItems = listOf(
+            context.getString(R.string.feed_filter_friend_online_offline),
+            context.getString(R.string.feed_filter_friend_location),
+            context.getString(R.string.feed_filter_friend_status),
+            context.getString(R.string.feed_filter_friend_avatar)
+        )
+        feedFilters.clear()
+        feedFilters.addAll(filterItems)
+        applyFeedFilters()
     }
 
     fun getCurrentProfileValues() {

@@ -535,32 +535,13 @@ class NavigationScreen : Screen {
                                                 stringResource(R.string.feed_filter_friend_status),
                                                 stringResource(R.string.feed_filter_friend_avatar)
                                             ),
-                                            selected = listOf(),
+                                            selected = model.feedFilters,
                                             minSelected = 0,
                                             maxSelected = 4,
-                                            onSelectedChange = { }
-                                        )
-                                    }
-                                    HorizontalDivider(
-                                        Modifier,
-                                        DividerDefaults.Thickness,
-                                        DividerDefaults.color
-                                    )
-                                    SearchFilterSection(
-                                        title = stringResource(R.string.feed_filter_label2),
-                                        icon = Icons.Default.WarningAmber
-                                    ) {
-                                        LimitedChipSelect(
-                                            items = listOf(
-                                                stringResource(R.string.feed_filter_friend_online_offline),
-                                                stringResource(R.string.feed_filter_friend_location),
-                                                stringResource(R.string.feed_filter_friend_status),
-                                                stringResource(R.string.feed_filter_friend_avatar)
-                                            ),
-                                            selected = listOf(),
-                                            minSelected = 0,
-                                            maxSelected = 4,
-                                            onSelectedChange = { }
+                                            onSelectedChange = {
+                                                model.feedFilters.clear()
+                                                model.feedFilters.addAll(it)
+                                            }
                                         )
                                     }
                                 }
@@ -573,7 +554,7 @@ class NavigationScreen : Screen {
                                         OutlinedButton(
                                             modifier = Modifier.weight(1f),
                                             onClick = {
-                                                // Reset functionality later
+                                                model.resetFeedFilters()
                                             }
                                         ) {
                                             Text(stringResource(R.string.search_filter_button_reset))
@@ -582,6 +563,7 @@ class NavigationScreen : Screen {
                                         Button(
                                             modifier = Modifier.weight(1f),
                                             onClick = {
+                                                model.applyFeedFilters()
                                                 scope.launch {
                                                     feedFilterSheetState.hide()
                                                 }.invokeOnCompletion {

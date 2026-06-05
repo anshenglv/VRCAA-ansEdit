@@ -16,10 +16,12 @@
 
 package cc.sovellus.vrcaa.manager
 
+import cc.sovellus.vrcaa.App
 import cc.sovellus.vrcaa.helper.StatusHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import java.time.LocalDateTime
 import java.util.UUID
@@ -28,6 +30,7 @@ object FeedManager {
 
     private const val MAX_FEED_ENTRIES = 200
     private var FEED_OFFSET = 0
+    private val preferences = App.getContext().getSharedPreferences(App.PREFERENCES_NAME, android.content.Context.MODE_PRIVATE)
 
     enum class FeedType {
         FRIEND_FEED_ONLINE,
@@ -64,6 +67,23 @@ object FeedManager {
     private val feedStateFlow = MutableStateFlow<List<Feed>>(emptyList())
     val feedState: StateFlow<List<Feed>> = feedStateFlow.asStateFlow()
 
+    private val filterStateFlow = MutableStateFlow(
+        preferences.getStringSet("feed_filters", setOf("0", "1", "2", "3")) ?: setOf("0", "1", "2", "3")
+    )
+    val filterState: StateFlow<Set<String>> = filterStateFlow.asStateFlow()
+
+    val filteredFeedState = combine(feedStateFlow, filterStateFlow) { feed, filters ->
+        feed.filter { item ->
+            when (item.type) {
+                FeedType.FRIEND_FEED_ONLINE, FeedType.FRIEND_FEED_OFFLINE -> filters.contains("0")
+                FeedType.FRIEND_FEED_LOCATION -> filters.contains("1")
+                FeedType.FRIEND_FEED_STATUS -> filters.contains("2")
+                FeedType.FRIEND_FEED_AVATAR -> filters.contains("3")
+                else -> true
+            }
+        }
+    }
+
     fun loadFeed() {
         val feed = DatabaseManager.readFeeds(MAX_FEED_ENTRIES, FEED_OFFSET)
         if (feed.size < MAX_FEED_ENTRIES && feed.isNotEmpty()) {
@@ -82,5 +102,10 @@ object FeedManager {
     fun addFeed(feed: Feed) {
         feedStateFlow.update { current -> listOf(feed) + current }
         DatabaseManager.writeFeed(feed)
+    }
+
+    fun updateFilters(filters: Set<String>) {
+        filterStateFlow.update { filters }
+        preferences.edit().putStringSet("feed_filters", filters).apply()
     }
 }

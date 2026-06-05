@@ -17,9 +17,12 @@
 package cc.sovellus.vrcaa.ui.screen.feed
 
 import cafe.adriel.voyager.core.model.StateScreenModel
+import cafe.adriel.voyager.core.model.screenModelScope
 import cc.sovellus.vrcaa.manager.CacheManager
 import cc.sovellus.vrcaa.manager.FeedManager
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 
 class FeedScreenModel : StateScreenModel<FeedScreenModel.FeedState>(FeedState.Init) {
 
@@ -29,7 +32,8 @@ class FeedScreenModel : StateScreenModel<FeedScreenModel.FeedState>(FeedState.In
         data object Result : FeedState()
     }
 
-    val feed: StateFlow<List<FeedManager.Feed>> = FeedManager.feedState
+    val feed: StateFlow<List<FeedManager.Feed>> = FeedManager.filteredFeedState
+        .stateIn(screenModelScope, SharingStarted.Eagerly, emptyList())
     val hasMore: StateFlow<Boolean> = FeedManager.hasMoreFeedAvailable
 
     private val cacheListener = object : CacheManager.CacheListener {

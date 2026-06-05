@@ -191,8 +191,7 @@
     <string name="feed_friend_avatar_text">更改模型为</string>
     <string name="feed_friend_username_changed_label">更换用户名</string>
     <string name="feed_friend_username_changed_text">更改用户名为</string>
-    <string name="feed_filter_label">列表过滤器</string>
-    <string name="feed_filter_label2">入库过滤器</string>
+    <string name="feed_filter_label">动态过滤器</string>
     <string name="feed_filter_friend_online_offline">好友上下线</string>
     <string name="feed_filter_friend_location">好友位置变化</string>
     <string name="feed_filter_friend_status">好友状态变更</string>

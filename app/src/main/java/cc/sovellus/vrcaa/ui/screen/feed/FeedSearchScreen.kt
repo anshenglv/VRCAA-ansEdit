@@ -57,10 +57,10 @@ class FeedSearchScreen : Screen {
         val navigator: Navigator = LocalNavigator.currentOrThrow
 
         val input = remember { mutableStateOf("") }
-        val feedState by FeedManager.feedState.collectAsState()
-        val hasMoreAndSearch by FeedManager.hasMoreFeedAvailable.collectAsState()
         val searchText = remember { mutableStateOf("") }
-        val hasMore by remember { derivedStateOf { hasMoreAndSearch && searchText.value.isNotEmpty() } }
+        val feedState by FeedManager.filteredFeedState.collectAsState(listOf())
+        val hasMore by FeedManager.hasMoreFeedAvailable.collectAsState()
+        val hasMoreAndSearch by remember { derivedStateOf { hasMore && searchText.value.isNotEmpty() } }
 
         val filteredFeed = remember(searchText.value, feedState) {
             if (searchText.value.isEmpty()) {
@@ -119,7 +119,7 @@ class FeedSearchScreen : Screen {
                     color = MaterialTheme.colorScheme.background,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    FeedList(filteredFeed, true, hasMore)
+                    FeedList(filteredFeed, true, hasMoreAndSearch)
                 }
             }
         }
