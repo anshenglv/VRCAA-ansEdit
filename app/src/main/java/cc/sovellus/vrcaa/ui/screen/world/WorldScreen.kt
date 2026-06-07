@@ -277,7 +277,7 @@ class WorldScreen(
 
                         Column(
                             modifier = Modifier
-                                .padding(16.dp)
+                                .padding(start = 16.dp, end = 16.dp)
                                 .fillMaxWidth()
                                 .fillMaxHeight()
                                 .padding(
@@ -289,8 +289,7 @@ class WorldScreen(
                         ) {
                             MultiChoiceSegmentedButtonRow(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 16.dp),
+                                    .fillMaxWidth(),
                             ) {
                                 options.forEachIndexed { index, label ->
                                     SegmentedButton(
@@ -542,7 +541,7 @@ class WorldScreen(
                 WorldCard(world, onImageClick, clickable)
 
                 Column(
-                    modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
+                    modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.SpaceBetween,
                     horizontalAlignment = Alignment.Start,
                 ) {
@@ -551,7 +550,7 @@ class WorldScreen(
                             defaultElevation = 6.dp
                         ),
                         modifier = Modifier
-                            .padding(bottom = 16.dp)
+                            .padding(top = 16.dp)
                             .widthIn(0.dp, 520.dp)
                     ) {
                         SubHeader(title = stringResource(R.string.world_label_description))
@@ -563,7 +562,7 @@ class WorldScreen(
                             defaultElevation = 6.dp
                         ),
                         modifier = Modifier
-                            .padding(bottom = 16.dp)
+                            .padding(top = 16.dp, bottom = 16.dp)
                             .widthIn(0.dp, 520.dp)
                     ) {
                         val userTimeZone = TimeZone.getDefault().toZoneId()
