@@ -115,6 +115,7 @@ import cc.sovellus.vrcaa.ui.screen.profile.UserProfileScreen
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
+import wu.seal.jsontokotlin.ui.jButton
 import java.text.NumberFormat
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
@@ -541,7 +542,7 @@ class WorldScreen(
                 WorldCard(world, onImageClick, clickable)
 
                 Column(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.padding(bottom = 16.dp),
                     verticalArrangement = Arrangement.SpaceBetween,
                     horizontalAlignment = Alignment.Start,
                 ) {
@@ -550,7 +551,7 @@ class WorldScreen(
                             defaultElevation = 6.dp
                         ),
                         modifier = Modifier
-                            .padding(top = 16.dp)
+                            .padding(bottom = 16.dp)
                             .widthIn(0.dp, 520.dp)
                     ) {
                         SubHeader(title = stringResource(R.string.world_label_description))
@@ -562,7 +563,7 @@ class WorldScreen(
                             defaultElevation = 6.dp
                         ),
                         modifier = Modifier
-                            .padding(top = 16.dp, bottom = 16.dp)
+                            .padding(bottom = 16.dp)
                             .widthIn(0.dp, 520.dp)
                     ) {
                         val userTimeZone = TimeZone.getDefault().toZoneId()

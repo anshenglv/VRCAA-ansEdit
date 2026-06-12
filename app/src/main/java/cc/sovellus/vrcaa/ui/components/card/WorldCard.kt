@@ -87,7 +87,7 @@ fun WorldCard(
             defaultElevation = 6.dp
         ),
         modifier = Modifier
-            .padding(top = 16.dp)
+            .padding(top = 16.dp, bottom = 16.dp)
             .heightIn(min = 220.dp)
             .widthIn(0.dp, 520.dp)
             .fillMaxWidth()

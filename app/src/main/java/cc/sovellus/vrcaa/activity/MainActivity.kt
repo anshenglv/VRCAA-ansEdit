@@ -56,6 +56,7 @@ class MainActivity : BaseActivity() {
         val terminateSession = intent.extras?.getBoolean("TERMINATE_SESSION") == true
         val restartSession = intent.extras?.getBoolean("RESTART_SESSION") == true
 
+
         if (restartSession || terminateSession || invalidSession) {
             stopService(Intent(this, PipelineService::class.java))
             if (preferences.richPresenceEnabled) {
@@ -130,12 +131,17 @@ class MainActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         if (preferences.timeInBackground > 0) {
-            val minutes = (System.currentTimeMillis() - preferences.timeInBackground) / (1000 * 60)
-            if (minutes >= 15) {
+            //val minutes = (System.currentTimeMillis() - preferences.timeInBackground) / (1000 * 60)
+            if (CacheManager.ifReconnect){
                 lifecycleScope.launch(Dispatchers.IO) {
                     CacheManager.buildCache()
                 }
             }
+            /*if (minutes >= 15) {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    CacheManager.buildCache()
+                }
+            }*/
         }
     }
 }

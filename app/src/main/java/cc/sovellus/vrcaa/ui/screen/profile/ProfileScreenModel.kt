@@ -32,27 +32,17 @@ class ProfileScreenModel : StateScreenModel<ProfileScreenModel.ProfileState>(Pro
         override fun profileUpdated(profile: User) {
             mutableState.value = ProfileState.Result(profile)
         }
-
-        override fun startCacheRefresh() {
-            mutableState.value = ProfileState.Loading
-        }
-
-        override fun endCacheRefresh() {
-            fetchProfile()
-        }
     }
 
     init {
-        mutableState.value = ProfileState.Loading
-        CacheManager.addListener(cacheListener)
-
-        if (CacheManager.isBuilt()) {
-            fetchProfile()
+        val profile = CacheManager.profile.value
+        if (profile.id.isNotEmpty()) {
+            mutableState.value = ProfileState.Result(profile)
+        } else {
+            mutableState.value = ProfileState.Loading
         }
-    }
 
-    private fun fetchProfile() {
-        mutableState.value = ProfileState.Result(CacheManager.profile.value)
+        CacheManager.addListener(cacheListener)
     }
 
     override fun onDispose() {

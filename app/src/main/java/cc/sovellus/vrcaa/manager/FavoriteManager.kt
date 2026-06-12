@@ -16,10 +16,14 @@
 
 package cc.sovellus.vrcaa.manager
 
+import android.content.Context
+import cc.sovellus.vrcaa.App
 import cc.sovellus.vrcaa.api.vrchat.http.interfaces.IFavorites.FavoriteType
 import cc.sovellus.vrcaa.api.vrchat.http.models.FavoriteLimits
 import cc.sovellus.vrcaa.base.BaseManager
 import cc.sovellus.vrcaa.manager.ApiManager.api
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -59,23 +63,70 @@ object FavoriteManager {
     private val tagToGroupMetadataStateFlow = MutableStateFlow<Map<String, FavoriteGroupMetadata>>(emptyMap())
     val groupMetadataState: StateFlow<Map<String, FavoriteGroupMetadata>> = tagToGroupMetadataStateFlow.asStateFlow()
 
+    private var wasRefreshed = false
+
+    fun wasRefreshed(): Boolean {
+        return wasRefreshed
+    }
+
+    private val gson = Gson()
+    private val preferences = App.getContext().getSharedPreferences("vrcaa_favorites_cache", Context.MODE_PRIVATE)
+
+    fun loadFromCache() {
+        val worldsJson = preferences.getString("worlds", null)
+        val avatarsJson = preferences.getString("avatars", null)
+        val friendsJson = preferences.getString("friends", null)
+        val metadataJson = preferences.getString("metadata", null)
+        val limitsJson = preferences.getString("limits", null)
+
+        val type = object : TypeToken<Map<String, List<FavoriteMetadata>>>() {}.type
+        val metadataType = object : TypeToken<Map<String, FavoriteGroupMetadata>>() {}.type
+
+        worldsJson?.let { worldListStateFlow.value = gson.fromJson(it, type) }
+        avatarsJson?.let { avatarListStateFlow.value = gson.fromJson(it, type) }
+        friendsJson?.let { friendListStateFlow.value = gson.fromJson(it, type) }
+        metadataJson?.let { tagToGroupMetadataStateFlow.value = gson.fromJson(it, metadataType) }
+        limitsJson?.let { favoriteLimits = gson.fromJson(it, FavoriteLimits::class.java) }
+        
+        if (worldsJson != null || avatarsJson != null || friendsJson != null) {
+            wasRefreshed = true
+        }
+    }
+
+    private fun saveToCache() {
+        preferences.edit().apply {
+            putString("worlds", gson.toJson(worldListStateFlow.value))
+            putString("avatars", gson.toJson(avatarListStateFlow.value))
+            putString("friends", gson.toJson(friendListStateFlow.value))
+            putString("metadata", gson.toJson(tagToGroupMetadataStateFlow.value))
+            putString("limits", gson.toJson(favoriteLimits))
+            apply()
+        }
+    }
+
     private fun putGroupMetadata(tag: String, metadata: FavoriteGroupMetadata) {
         tagToGroupMetadataStateFlow.update { current ->
-            current + (tag to metadata)
+            val new = current + (tag to metadata)
+            saveToCache()
+            new
         }
     }
 
     private fun putGroupMetadataPreservingSize(tag: String, metadata: FavoriteGroupMetadata) {
         tagToGroupMetadataStateFlow.update { current ->
             val previousSize = current[tag]?.size ?: -1
-            current + (tag to metadata.copy(size = previousSize))
+            val new = current + (tag to metadata.copy(size = previousSize))
+            saveToCache()
+            new
         }
     }
 
     private fun updateGroupSize(tag: String, delta: Int) {
         tagToGroupMetadataStateFlow.update { current ->
             val existing = current[tag] ?: return@update current
-            current + (tag to existing.copy(size = existing.size + delta))
+            val new = current + (tag to existing.copy(size = existing.size + delta))
+            saveToCache()
+            new
         }
     }
 
@@ -86,7 +137,9 @@ object FavoriteManager {
     ) {
         flow.update { current ->
             val existing = current[tag] ?: return@update current
-            current + (tag to (existing + items))
+            val new = current + (tag to (existing + items))
+            saveToCache()
+            new
         }
     }
 
@@ -97,7 +150,9 @@ object FavoriteManager {
     ) {
         flow.update { current ->
             val existing = current[tag] ?: return@update current
-            current + (tag to (existing + item))
+            val new = current + (tag to (existing + item))
+            saveToCache()
+            new
         }
     }
 
@@ -108,7 +163,9 @@ object FavoriteManager {
     ) {
         flow.update { current ->
             val existing = current[tag] ?: return@update current
-            current + (tag to existing.filterNot { it.id == id })
+            val new = current + (tag to existing.filterNot { it.id == id })
+            saveToCache()
+            new
         }
     }
 
@@ -199,6 +256,8 @@ object FavoriteManager {
         }
 
         awaitAll(worldJob, avatarJob, friendJob)
+        wasRefreshed = true
+        saveToCache()
     }
 
     suspend fun updateGroupMetadata(tag: String, metadata: FavoriteGroupMetadata): Boolean {
@@ -231,7 +290,7 @@ object FavoriteManager {
         return updated
     }
 
-    // it's the 21th century, and we have computers faster than super computers in our pockets.
+    // it's the 21st century, and we have computers faster than super computers in our pockets.
     fun isFavorite(type: String, id: String): Boolean {
         return when (type) {
             "world" -> worldListStateFlow.value.values.any { group -> group.any { it.id == id } }

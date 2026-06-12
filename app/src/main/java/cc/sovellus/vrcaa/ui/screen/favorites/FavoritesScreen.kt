@@ -76,15 +76,16 @@ class FavoritesScreen : Screen {
         val navigator = LocalNavigator.currentOrThrow
         val model = navigator.rememberNavigatorScreenModel { FavoritesScreenModel() }
 
-        val state by model.state.collectAsState()
-
-        when (state) {
-            is FavoriteState.Loading -> {
-                App.setLoadingText(R.string.cache_updating_favorites)
-                LoadingIndicatorScreen().Content() }
-            is FavoriteState.Result -> ShowScreen(model)
-            else -> {}
-        }
+//        val state by model.state.collectAsState()
+//
+//        when (state) {
+//            is FavoriteState.Loading -> {
+//                App.setLoadingText(R.string.cache_updating_favorites)
+//                LoadingIndicatorScreen().Content() }
+//            is FavoriteState.Result ->
+     ShowScreen(model)
+//            else -> {}
+//        }
     }
 
     @Composable

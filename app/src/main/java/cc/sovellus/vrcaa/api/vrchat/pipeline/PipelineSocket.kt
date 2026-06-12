@@ -35,6 +35,7 @@ import cc.sovellus.vrcaa.api.vrchat.pipeline.models.UserLocation
 import cc.sovellus.vrcaa.api.vrchat.pipeline.models.UserUpdate
 import cc.sovellus.vrcaa.helper.DnsHelper
 import cc.sovellus.vrcaa.manager.ApiManager.api
+import cc.sovellus.vrcaa.manager.CacheManager
 import cc.sovellus.vrcaa.manager.DebugManager
 import cc.sovellus.vrcaa.manager.DebugManager.DebugType
 import com.google.gson.Gson
@@ -229,6 +230,7 @@ class PipelineSocket(
             delay(Config.RECONNECTION_INTERVAL)
             socket.cancel()
             connect()
+            CacheManager.ifReconnect = true
         }
     }
 

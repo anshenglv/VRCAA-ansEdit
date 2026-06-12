@@ -59,6 +59,7 @@ object CacheManager : BaseManager<CacheManager.CacheListener>() {
     val recommendedWorldsState: StateFlow<List<World>> = recommendedWorldsStateFlow.asStateFlow()
     val worldList: StateFlow<List<WorldCache>> = worldListStateFlow.asStateFlow()
     val profile: StateFlow<User> = profileStateFlow.asStateFlow()
+    var ifReconnect = false
 
     private var isCacheBuilt = AtomicBoolean(false)
 
@@ -66,6 +67,8 @@ object CacheManager : BaseManager<CacheManager.CacheListener>() {
 
         recentWorldsStateFlow.value = emptyList()
         recommendedWorldsStateFlow.value = emptyList()
+
+        FavoriteManager.loadFromCache()
 
         //App.setLoadingText(R.string.global_app_default_loading_text)
 
@@ -90,7 +93,7 @@ object CacheManager : BaseManager<CacheManager.CacheListener>() {
 
         val jobs = listOf(
             launch {
-                user.await()?.let { profileStateFlow.value = it }
+                user.await()?.let { updateProfile(it) }
             },
 
             launch {
@@ -102,7 +105,11 @@ object CacheManager : BaseManager<CacheManager.CacheListener>() {
                 FriendManager.setFriends(friends.await().toMutableList())
             },
 
-            launch { FavoriteManager.refresh() },
+            launch {
+                if (!FavoriteManager.wasRefreshed()) {
+                    FavoriteManager.refresh()
+                }
+            },
 
             launch {
                 val worlds = recentWorlds.await()
@@ -134,7 +141,7 @@ object CacheManager : BaseManager<CacheManager.CacheListener>() {
         )
 
         jobs.joinAll()
-
+        ifReconnect = false
         isCacheBuilt.exchange(true)
         getListeners().forEach { it.endCacheRefresh() }
     }
@@ -164,6 +171,7 @@ object CacheManager : BaseManager<CacheManager.CacheListener>() {
         profileStateFlow.update {
             JsonHelper.mergeJson(it, profile, User::class.java)
         }
+        getListeners().forEach { it.profileUpdated(profileStateFlow.value) }
     }
 
     fun addRecentWorld(world: World) {
