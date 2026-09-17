@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.screen.uniqueScreenKey
+import cc.sovellus.vrcaa.App
 import cc.sovellus.vrcaa.R
 import cc.sovellus.vrcaa.api.vrchat.http.models.Profile
 import cc.sovellus.vrcaa.api.vrchat.http.models.User
@@ -63,7 +64,8 @@ class ProfileScreen : Screen {
         val state by model.state.collectAsState()
 
         when (val result = state) {
-            is ProfileScreenModel.ProfileState.Loading -> LoadingIndicatorScreen().Content()
+            is ProfileScreenModel.ProfileState.Loading -> {App.setLoadingText(R.string.cache_updating_profile)
+                LoadingIndicatorScreen().Content()}
             is ProfileScreenModel.ProfileState.Result -> RenderProfile(result.profile)
             else -> {}
         }
