@@ -79,9 +79,6 @@ object CacheManager : BaseManager<CacheManager.CacheListener>() {
         isCacheBuilt.exchange(false)
         getListeners().forEach { it.startCacheRefresh() }
 
-        isCacheBuilt.exchange(false)
-        getListeners().forEach { it.startCacheRefresh() }
-
         val userFetch = api.auth.fetchCurrentUser()
         if (userFetch != null) {
             userStateFlow.value = userFetch
