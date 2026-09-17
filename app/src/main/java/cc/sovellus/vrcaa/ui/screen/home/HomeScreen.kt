@@ -210,41 +210,41 @@ class HomeScreen : Screen {
 
                 Spacer(modifier = Modifier.padding(4.dp))
 
-                val worlds = CacheManager.recommendedWorldsState.collectAsState()
-                if (worlds.value.isEmpty()) {
-                    Text(
-                        text = stringResource(R.string.home_curated_for_you),
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(start = 16.dp, bottom = 4.dp)
-                    )
-                    LazyRow(
-                        modifier = Modifier
-                            .height(190.dp)
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically,
-                        content = {
-                            item {
-                                Text(text = stringResource(R.string.result_not_found))
-                            }
-                        }
-                    )
-                } else {
-                    HorizontalRow(
-                        title = stringResource(R.string.home_curated_for_you)
-                    ) {
-                        items(worlds.value) { world ->
-                            RowItem(
-                                name = world.name,
-                                url = world.imageUrl.ifEmpty { world.thumbnailImageUrl },
-                                onClick = { navigator.parent?.parent?.push(WorldScreen(world.id)) }
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.padding(4.dp))
+//                val worlds = CacheManager.recommendedWorldsState.collectAsState()
+//                if (worlds.value.isEmpty()) {
+//                    Text(
+//                        text = stringResource(R.string.home_curated_for_you),
+//                        style = MaterialTheme.typography.headlineSmall,
+//                        fontWeight = FontWeight.Bold,
+//                        modifier = Modifier.padding(start = 16.dp, bottom = 4.dp)
+//                    )
+//                    LazyRow(
+//                        modifier = Modifier
+//                            .height(190.dp)
+//                            .fillMaxWidth(),
+//                        horizontalArrangement = Arrangement.Center,
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        content = {
+//                            item {
+//                                Text(text = stringResource(R.string.result_not_found))
+//                            }
+//                        }
+//                    )
+//                } else {
+//                    HorizontalRow(
+//                        title = stringResource(R.string.home_curated_for_you)
+//                    ) {
+//                        items(worlds.value) { world ->
+//                            RowItem(
+//                                name = world.name,
+//                                url = world.imageUrl.ifEmpty { world.thumbnailImageUrl },
+//                                onClick = { navigator.parent?.parent?.push(WorldScreen(world.id)) }
+//                            )
+//                        }
+//                    }
+//                }
+//
+//                Spacer(modifier = Modifier.padding(4.dp))
             }
         }
     }

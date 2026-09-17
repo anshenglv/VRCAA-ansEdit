@@ -34,7 +34,7 @@ class FriendsScreenModel : StateScreenModel<FriendsState>(FriendsState.Init) {
 
     val friends: StateFlow<List<Friend>> = FriendManager.friendsState
 
-    var currentIndex = mutableIntStateOf(0)
+    var currentIndex = mutableIntStateOf(-1)
 
     private val cacheListener = object : CacheManager.CacheListener {
         override fun startCacheRefresh() {

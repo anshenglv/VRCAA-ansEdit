@@ -56,10 +56,10 @@ object CacheManager : BaseManager<CacheManager.CacheListener>() {
     private var profileStateFlow = MutableStateFlow(Profile())
     private var worldListStateFlow = MutableStateFlow(emptyList<WorldCache>())
     private val recentWorldsStateFlow = MutableStateFlow<List<WorldCache>>(emptyList())
-    private val recommendedWorldsStateFlow = MutableStateFlow<List<World>>(emptyList())
+    //private val recommendedWorldsStateFlow = MutableStateFlow<List<World>>(emptyList())
 
     val recentWorldsState: StateFlow<List<WorldCache>> = recentWorldsStateFlow.asStateFlow()
-    val recommendedWorldsState: StateFlow<List<World>> = recommendedWorldsStateFlow.asStateFlow()
+    //val recommendedWorldsState: StateFlow<List<World>> = recommendedWorldsStateFlow.asStateFlow()
     val worldList: StateFlow<List<WorldCache>> = worldListStateFlow.asStateFlow()
     val profile: StateFlow<Profile> = profileStateFlow.asStateFlow()
     val user: StateFlow<User> = userStateFlow.asStateFlow()
@@ -70,7 +70,7 @@ object CacheManager : BaseManager<CacheManager.CacheListener>() {
     suspend fun buildCache() = coroutineScope {
 
         recentWorldsStateFlow.value = emptyList()
-        recommendedWorldsStateFlow.value = emptyList()
+        //recommendedWorldsStateFlow.value = emptyList()
 
         FavoriteManager.loadFromCache()
 
@@ -93,7 +93,7 @@ object CacheManager : BaseManager<CacheManager.CacheListener>() {
         val offlineFriends = async { api.friends.fetchFriends(true) }
 
         val recentWorlds = async { api.worlds.fetchRecent() }
-        val recommendedWorlds = async { RecommendationManager.recommendWorlds() }
+        //val recommendedWorlds = async { RecommendationManager.recommendWorlds() }
 
         val notifications = async { api.user.fetchNotifications() }
         val notificationsV2 = async { api.notifications.fetchNotifications() }
@@ -144,9 +144,9 @@ object CacheManager : BaseManager<CacheManager.CacheListener>() {
                 }
             },
 
-            launch {
-                recommendedWorldsStateFlow.value = recommendedWorlds.await()
-            },
+            //launch {
+                //recommendedWorldsStateFlow.value = recommendedWorlds.await()
+            //},
         )
 
         jobs.joinAll()

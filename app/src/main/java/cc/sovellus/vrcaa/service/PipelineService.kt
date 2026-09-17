@@ -280,7 +280,7 @@ class PipelineService : Service(), CoroutineScope {
                             instance?.let {
                                 CacheManager.updateWorld(instance.world)
 
-                                RecommendationManager.updateLocation(instance)
+                                //RecommendationManager.updateLocation(instance)
 
                                 val location = LocationHelper.parseLocationInfo(user.location)
                                 val info = PresenceManager.PresenceInfo().apply {
@@ -295,14 +295,14 @@ class PipelineService : Service(), CoroutineScope {
 
                                 PresenceManager.updateWorld(info)
                                 CacheManager.addRecentWorld(instance.world)
-                            } ?: run {
-                                RecommendationManager.updateLocation(null)
-                            }
+                            } //?: run {
+                                //RecommendationManager.updateLocation(null)
+                            //}
                         }
-                    } else {
-                        launch {
-                            RecommendationManager.updateLocation(null)
-                        }
+//                    } else {
+//                        launch {
+//                            RecommendationManager.updateLocation(null)
+//                        }
                     }
                 }
 
