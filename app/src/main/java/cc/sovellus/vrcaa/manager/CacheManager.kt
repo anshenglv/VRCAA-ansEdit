@@ -59,7 +59,7 @@ object CacheManager : BaseManager<CacheManager.CacheListener>() {
     val recommendedWorldsState: StateFlow<List<World>> = recommendedWorldsStateFlow.asStateFlow()
     val worldList: StateFlow<List<WorldCache>> = worldListStateFlow.asStateFlow()
     val profile: StateFlow<User> = profileStateFlow.asStateFlow()
-    var ifReconnect = false
+    //var ifReconnect = false
 
     private var isCacheBuilt = AtomicBoolean(false)
 
@@ -141,7 +141,7 @@ object CacheManager : BaseManager<CacheManager.CacheListener>() {
         )
 
         jobs.joinAll()
-        ifReconnect = false
+        //ifReconnect = false
         isCacheBuilt.exchange(true)
         getListeners().forEach { it.endCacheRefresh() }
     }

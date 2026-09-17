@@ -230,7 +230,7 @@ class PipelineSocket(
             delay(Config.RECONNECTION_INTERVAL)
             socket.cancel()
             connect()
-            CacheManager.ifReconnect = true
+            //CacheManager.ifReconnect = true
         }
     }
 

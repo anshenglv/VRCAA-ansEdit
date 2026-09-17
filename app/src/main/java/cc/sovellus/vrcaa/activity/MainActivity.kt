@@ -132,11 +132,11 @@ class MainActivity : BaseActivity() {
         super.onResume()
         if (preferences.timeInBackground > 0) {
             //val minutes = (System.currentTimeMillis() - preferences.timeInBackground) / (1000 * 60)
-            if (CacheManager.ifReconnect){
+            //if (CacheManager.ifReconnect){
                 lifecycleScope.launch(Dispatchers.IO) {
-                    CacheManager.buildCache()
+                    //CacheManager.buildCache()
                 }
-            }
+            //}
             /*if (minutes >= 15) {
                 lifecycleScope.launch(Dispatchers.IO) {
                     CacheManager.buildCache()
