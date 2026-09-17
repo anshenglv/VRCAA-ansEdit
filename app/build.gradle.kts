@@ -20,8 +20,8 @@ android {
         applicationId = "cc.sovellus.vrcaa"
         minSdk = 27
         targetSdk = 36
-        versionCode = 300007
-        versionName = "3.0.7"
+        versionCode = 300100
+        versionName = "3.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -39,10 +39,14 @@ android {
 
     signingConfigs {
         create("release") {
-            val storeFileEnv = System.getenv("SIGNING_STORE_FILE")
-            val storePasswordEnv = System.getenv("SIGNING_STORE_PASSWORD")
-            val keyAliasEnv = System.getenv("SIGNING_KEY_ALIAS")
-            val keyPasswordEnv = System.getenv("SIGNING_KEY_PASSWORD")
+            val storeFileEnv = System.getenv("\"C:\\Users\\bddjx\\Documents\\ansKEY\"")
+            val storePasswordEnv = System.getenv("202207")
+            val keyAliasEnv = System.getenv("key0")
+            val keyPasswordEnv = System.getenv("d93A#b58*q")
+            storeFile = file("C:\\Users\\bddjx\\Documents\\ansKEY")
+            storePassword = "202207"
+            keyAlias = "key0"
+            keyPassword = "d93A#b58*q"
 
             if (storeFileEnv != null && File(storeFileEnv).exists()) {
                 storeFile = file(storeFileEnv)
@@ -65,6 +69,7 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("release")
+            applicationIdSuffix = ".ans"
         }
         debug {
             applicationIdSuffix = ".dev"
