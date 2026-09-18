@@ -16,6 +16,7 @@
 
 package cc.sovellus.vrcaa.ui.components.layout
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -31,13 +32,16 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun HorizontalRow(
     title: String,
+    onClick: (() -> Unit)? = null,
     content: LazyListScope.() -> Unit
 ) {
     Text(
         text = title,
         fontWeight = FontWeight.Bold,
         fontSize = 24.sp,
-        modifier = Modifier.padding(start = 16.dp, bottom = 4.dp)
+        modifier = Modifier
+            .padding(start = 16.dp, bottom = 4.dp)
+            .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier)
     )
 
     LazyRow(

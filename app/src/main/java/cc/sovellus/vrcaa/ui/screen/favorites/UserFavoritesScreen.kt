@@ -165,7 +165,7 @@ class UserFavoritesScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight()
-                        .padding(start = 16.dp, end = 16.dp)
+                        .padding(0.dp)
                 ) {
                     item {
                         when (model.currentIndex.intValue) {
@@ -190,7 +190,17 @@ class UserFavoritesScreen(
                     FavoriteHorizontalRow(
                         title = item.key,
                         allowEdit = false,
-                        onEdit = {}
+                        onEdit = {},
+                        onClick = {
+                            val items = item.value.map {
+                                FavoriteFullListScreen.FavoriteItem(it.name, it.thumbnailImageUrl) {
+                                    if (it.name != "???") {
+                                        navigator.push(WorldScreen(it.id))
+                                    }
+                                }
+                            }
+                            navigator.push(FavoriteFullListScreen(item.key, items))
+                        }
                     ) {
                         items(item.value) {
                             RowItem(name = it.name, url = it.thumbnailImageUrl) {
@@ -228,7 +238,17 @@ class UserFavoritesScreen(
                     FavoriteHorizontalRow(
                         title = item.key,
                         allowEdit = false,
-                        onEdit = {}
+                        onEdit = {},
+                        onClick = {
+                            val items = item.value.map {
+                                FavoriteFullListScreen.FavoriteItem(it.name, it.thumbnailImageUrl) {
+                                    if (it.name != "???") {
+                                        navigator.push(UserAvatarScreen(it))
+                                    }
+                                }
+                            }
+                            navigator.push(FavoriteFullListScreen(item.key, items))
+                        }
                     ) {
                         items(item.value) {
                             RowItem(name = it.name, url = it.thumbnailImageUrl) {

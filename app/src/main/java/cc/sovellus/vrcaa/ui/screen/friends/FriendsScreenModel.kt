@@ -16,7 +16,7 @@
 
 package cc.sovellus.vrcaa.ui.screen.friends
 
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cc.sovellus.vrcaa.api.vrchat.http.models.Friend
 import cc.sovellus.vrcaa.manager.CacheManager
@@ -34,7 +34,7 @@ class FriendsScreenModel : StateScreenModel<FriendsState>(FriendsState.Init) {
 
     val friends: StateFlow<List<Friend>> = FriendManager.friendsState
 
-    var currentIndex = mutableIntStateOf(-1)
+    val selectedIndices = mutableStateListOf<Int>()
 
     private val cacheListener = object : CacheManager.CacheListener {
         override fun startCacheRefresh() {

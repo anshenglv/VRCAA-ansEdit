@@ -108,6 +108,7 @@ class FriendsScreen : Screen {
                     .padding(start = 16.dp, end = 16.dp)
             ) {
                 options.forEachIndexed { index, label ->
+                    val checked = model.selectedIndices.contains(index)
                     SegmentedButton(
                         shape = SegmentedButtonDefaults.itemShape(
                             index = index,
@@ -115,7 +116,7 @@ class FriendsScreen : Screen {
                         ),
                         icon = {
                             SegmentedButtonDefaults.Icon(
-                                active = index == model.currentIndex.intValue,
+                                active = checked,
                                 activeContent = {
                                     Icon(
                                         imageVector = Icons.Filled.Check,
@@ -133,46 +134,54 @@ class FriendsScreen : Screen {
                             )
                         },
                         onCheckedChange = {
-                            if (model.currentIndex.intValue == index) {
-                                model.currentIndex.intValue = -1
+                            if (checked) {
+                                model.selectedIndices.remove(index)
                             } else {
-                                model.currentIndex.intValue = index
+                                model.selectedIndices.add(index)
                             }
                         },
-                        checked = index == model.currentIndex.intValue
+                        checked = checked
                     ) {
                         Text(text = label, softWrap = true, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                 }
             }
 
-            when (model.currentIndex.intValue) {
-                0 -> ShowFriendsFavorite(friends)
-                1 -> ShowFriends(friends)
-                2 -> ShowFriendsOnWebsite(friends)
-                3 -> ShowFriendsOffline(friends)
-                else -> ShowAllFriends(friends)
-            }
+            ShowFriendsList(friends, model.selectedIndices)
         }
     }
 
     @Composable
-    fun ShowAllFriends(friends: List<Friend>) {
+    fun ShowFriendsList(friends: List<Friend>, selectedIndices: List<Int>) {
         val navigator = LocalNavigator.currentOrThrow
 
-        val favoriteFriends = friends.filter { FavoriteManager.isFavorite("friend", it.id) && !it.location.contains("wrld_") && it.platform.isNotEmpty() }
-        val favoriteFriendsInInstances = friends.filter { FavoriteManager.isFavorite("friend", it.id) && it.location.contains("wrld_") && it.platform.isNotEmpty() }
-        val favoriteFriendsOffline = friends.filter { FavoriteManager.isFavorite("friend", it.id) && it.platform.isEmpty() }
+        val favoriteFriends = if (selectedIndices.isEmpty() || selectedIndices.contains(0)) {
+            friends.filter { FavoriteManager.isFavorite("friend", it.id) && !it.location.contains("wrld_") && it.platform.isNotEmpty() }
+        } else emptyList()
+        val favoriteFriendsInInstances = if (selectedIndices.isEmpty() || selectedIndices.contains(0)) {
+            friends.filter { FavoriteManager.isFavorite("friend", it.id) && it.location.contains("wrld_") && it.platform.isNotEmpty() }
+        } else emptyList()
+        val favoriteFriendsOffline = if (selectedIndices.isEmpty() || selectedIndices.contains(0)) {
+            friends.filter { FavoriteManager.isFavorite("friend", it.id) && it.platform.isEmpty() }
+        } else emptyList()
         val hasFavorites = favoriteFriends.isNotEmpty() || favoriteFriendsInInstances.isNotEmpty() || favoriteFriendsOffline.isNotEmpty()
 
-        val onlineFriends = friends.filter { !FavoriteManager.isFavorite("friend", it.id) && !it.location.contains("wrld_") && it.platform != "web" && it.platform.isNotEmpty() }
-        val onlineFriendsInInstances = friends.filter { !FavoriteManager.isFavorite("friend", it.id) && it.location.contains("wrld_") && it.platform != "web" && it.platform.isNotEmpty() }
+        val onlineFriends = if (selectedIndices.isEmpty() || selectedIndices.contains(1)) {
+            friends.filter { !FavoriteManager.isFavorite("friend", it.id) && !it.location.contains("wrld_") && it.platform != "web" && it.platform.isNotEmpty() }
+        } else emptyList()
+        val onlineFriendsInInstances = if (selectedIndices.isEmpty() || selectedIndices.contains(1)) {
+            friends.filter { !FavoriteManager.isFavorite("friend", it.id) && it.location.contains("wrld_") && it.platform != "web" && it.platform.isNotEmpty() }
+        } else emptyList()
         val hasOnline = onlineFriends.isNotEmpty() || onlineFriendsInInstances.isNotEmpty()
 
-        val websiteFriends = friends.filter { !FavoriteManager.isFavorite("friend", it.id) && it.platform == "web" }
+        val websiteFriends = if (selectedIndices.isEmpty() || selectedIndices.contains(2)) {
+            friends.filter { !FavoriteManager.isFavorite("friend", it.id) && it.platform == "web" }
+        } else emptyList()
         val hasWebsite = websiteFriends.isNotEmpty()
 
-        val offlineFriends = friends.filter { !FavoriteManager.isFavorite("friend", it.id) && it.platform.isEmpty() }
+        val offlineFriends = if (selectedIndices.isEmpty() || selectedIndices.contains(3)) {
+            friends.filter { !FavoriteManager.isFavorite("friend", it.id) && it.platform.isEmpty() }
+        } else emptyList()
         val hasOffline = offlineFriends.isNotEmpty()
 
         if (!hasFavorites && !hasOnline && !hasWebsite && !hasOffline) {
@@ -191,26 +200,17 @@ class FriendsScreen : Screen {
                     .padding(1.dp),
                 state = rememberLazyListState()
             ) {
-                if (hasFavorites) {
-                    favoriteFriendsItems(favoriteFriends, favoriteFriendsInInstances, favoriteFriendsOffline, navigator)
-                }
-                if (hasFavorites && (hasOnline || hasWebsite || hasOffline)) {
-                    item { HorizontalDivider(color = Color.Gray, thickness = 0.5.dp) }
-                }
-                if (hasOnline) {
-                    onlineFriendsItems(onlineFriends, onlineFriendsInInstances, navigator)
-                }
-                if (hasOnline && (hasWebsite || hasOffline)) {
-                    item { HorizontalDivider(color = Color.Gray, thickness = 0.5.dp) }
-                }
-                if (hasWebsite) {
-                    websiteFriendsItems(websiteFriends, navigator)
-                }
-                if (hasWebsite && hasOffline) {
-                    item { HorizontalDivider(color = Color.Gray, thickness = 0.5.dp) }
-                }
-                if (hasOffline) {
-                    offlineFriendsItems(offlineFriends, navigator)
+                val sections = mutableListOf<LazyListScope.() -> Unit>()
+                if (hasFavorites) sections.add { favoriteFriendsItems(favoriteFriends, favoriteFriendsInInstances, favoriteFriendsOffline, navigator) }
+                if (hasOnline) sections.add { onlineFriendsItems(onlineFriends, onlineFriendsInInstances, navigator) }
+                if (hasWebsite) sections.add { websiteFriendsItems(websiteFriends, navigator) }
+                if (hasOffline) sections.add { offlineFriendsItems(offlineFriends, navigator) }
+
+                sections.forEachIndexed { index, section ->
+                    section()
+                    if (index < sections.size - 1) {
+                        item { HorizontalDivider(color = Color.Gray, thickness = 0.5.dp) }
+                    }
                 }
             }
         }
@@ -308,124 +308,12 @@ class FriendsScreen : Screen {
         offlineFriends: List<Friend>,
         navigator: Navigator
     ) {
-        items(offlineFriends.sortedBy { StatusHelper.getStatusFromString(it.status) }) { friend ->
+        items(
+            offlineFriends.sortedBy { StatusHelper.getStatusFromString(it.status) }) { friend ->
             FriendItem(
                 friend = friend,
                 callback = { navigator.parent?.parent?.push(UserProfileScreen(friend.id)) }
             )
-        }
-    }
-
-    @Composable
-    fun ShowFriendsFavorite(
-        friends: List<Friend>
-    ) {
-        val favoriteFriends = friends.filter { FavoriteManager.isFavorite("friend", it.id) && !it.location.contains("wrld_") && it.platform.isNotEmpty() }
-        val favoriteFriendsInInstances = friends.filter { FavoriteManager.isFavorite("friend", it.id) && it.location.contains("wrld_") && it.platform.isNotEmpty() }
-        val favoriteFriendsOffline = friends.filter { FavoriteManager.isFavorite("friend", it.id) && it.platform.isEmpty() }
-
-        if (favoriteFriends.isEmpty() && favoriteFriendsInInstances.isEmpty() && favoriteFriendsOffline.isEmpty()) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(text = stringResource(R.string.result_not_found))
-            }
-        } else {
-            val navigator = LocalNavigator.currentOrThrow
-            LazyColumn(
-                Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .padding(1.dp),
-                state = rememberLazyListState()
-            ) {
-                favoriteFriendsItems(favoriteFriends, favoriteFriendsInInstances, favoriteFriendsOffline, navigator)
-            }
-        }
-    }
-
-    @Composable
-    fun ShowFriendsOnWebsite(
-        friends: List<Friend>
-    ) {
-        val websiteFriends = friends.filter { !FavoriteManager.isFavorite("friend", it.id) && it.platform == "web" }
-        if (websiteFriends.isEmpty()) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(text = stringResource(R.string.result_not_found))
-            }
-        } else {
-            val navigator = LocalNavigator.currentOrThrow
-            LazyColumn(
-                Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .padding(1.dp),
-                state = rememberLazyListState()
-            ) {
-                websiteFriendsItems(websiteFriends, navigator)
-            }
-        }
-    }
-
-    @Composable
-    fun ShowFriends(
-        friends: List<Friend>
-    ) {
-        val onlineFriends = friends.filter { !FavoriteManager.isFavorite("friend", it.id) && !it.location.contains("wrld_") && it.platform != "web" && it.platform.isNotEmpty() }
-        val onlineFriendsInInstances = friends.filter { !FavoriteManager.isFavorite("friend", it.id) && it.location.contains("wrld_") && it.platform != "web" && it.platform.isNotEmpty() }
-
-        if (onlineFriends.isEmpty() && onlineFriendsInInstances.isEmpty()) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(text = stringResource(R.string.result_not_found))
-            }
-        } else {
-            val navigator = LocalNavigator.currentOrThrow
-            LazyColumn(
-                Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .padding(1.dp),
-                state = rememberLazyListState()
-            ) {
-                onlineFriendsItems(onlineFriends, onlineFriendsInInstances, navigator)
-            }
-        }
-    }
-
-    @Composable
-    fun ShowFriendsOffline(
-        friends: List<Friend>
-    ) {
-        val offlineFriends = friends.filter { !FavoriteManager.isFavorite("friend", it.id) && it.platform.isEmpty() }
-        if (offlineFriends.isEmpty()) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(text = stringResource(R.string.result_not_found))
-            }
-        } else {
-            val navigator = LocalNavigator.currentOrThrow
-            LazyColumn(
-                Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .padding(1.dp),
-                state = rememberLazyListState()
-            ) {
-                offlineFriendsItems(offlineFriends, navigator)
-            }
         }
     }
 }

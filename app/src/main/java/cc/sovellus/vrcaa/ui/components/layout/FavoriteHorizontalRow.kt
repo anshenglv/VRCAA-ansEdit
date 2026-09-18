@@ -39,6 +39,7 @@ fun FavoriteHorizontalRow(
     title: String,
     allowEdit: Boolean,
     onEdit: () -> Unit,
+    onClick: (() -> Unit)? = null,
     content: LazyListScope.() -> Unit,
 ) {
     Row(
@@ -48,7 +49,9 @@ fun FavoriteHorizontalRow(
             text = title,
             fontWeight = FontWeight.Bold,
             fontSize = 24.sp,
-            modifier = Modifier.padding(start = 16.dp)
+            modifier = Modifier
+                .padding(start = 16.dp)
+                .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier)
         )
 
         if (allowEdit) {

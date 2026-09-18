@@ -135,27 +135,29 @@ class HomeScreen : Screen {
                 Spacer(modifier = Modifier.padding(4.dp))
 
                 if (recent.isEmpty()) {
-                    Text(
-                        text = stringResource(R.string.home_recently_visited),
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(start = 16.dp, bottom = 4.dp)
-                    )
-                    LazyRow(
-                        modifier = Modifier
-                            .height(190.dp)
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically,
-                        content = {
-                            item {
-                                Text(text = stringResource(R.string.result_not_found))
-                            }
+                    HorizontalRow(
+                        title = stringResource(R.string.home_recently_visited),
+                        onClick = { navigator.parent?.parent?.push(RecentlyVisitedScreen()) }
+                    ) {
+                        item {
+                            LazyRow(
+                                modifier = Modifier
+                                    .height(190.dp)
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically,
+                                content = {
+                                    item {
+                                        Text(text = stringResource(R.string.result_not_found))
+                                    }
+                                }
+                            )
                         }
-                    )
+                    }
                 } else {
                     HorizontalRow(
-                        title = stringResource(R.string.home_recently_visited)
+                        title = stringResource(R.string.home_recently_visited),
+                        onClick = { navigator.parent?.parent?.push(RecentlyVisitedScreen()) }
                     ) {
                         items(recent) { world ->
                             RowItem(
@@ -171,27 +173,29 @@ class HomeScreen : Screen {
 
                 val friendLocations = friends.filter { it.location.contains("wrld_") }
                 if (friendLocations.isEmpty()) {
-                    Text(
-                        text = stringResource(R.string.home_friend_locations),
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(start = 16.dp, bottom = 4.dp)
-                    )
-                    LazyRow(
-                        modifier = Modifier
-                            .height(190.dp)
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically,
-                        content = {
-                            item {
-                                Text(text = stringResource(R.string.result_not_found))
-                            }
+                    HorizontalRow(
+                        title = stringResource(R.string.home_friend_locations),
+                        onClick = { navigator.parent?.parent?.push(FriendLocationsScreen()) }
+                    ) {
+                        item {
+                            LazyRow(
+                                modifier = Modifier
+                                    .height(190.dp)
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically,
+                                content = {
+                                    item {
+                                        Text(text = stringResource(R.string.result_not_found))
+                                    }
+                                }
+                            )
                         }
-                    )
+                    }
                 } else {
                     HorizontalRow(
-                        title = stringResource(R.string.home_friend_locations)
+                        title = stringResource(R.string.home_friend_locations),
+                        onClick = { navigator.parent?.parent?.push(FriendLocationsScreen()) }
                     ) {
                         items(
                             friendLocations.distinctBy { it.location.split(':')[0] }

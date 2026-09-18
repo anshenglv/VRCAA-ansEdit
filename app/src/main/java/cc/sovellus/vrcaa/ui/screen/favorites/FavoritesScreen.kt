@@ -217,6 +217,24 @@ class FavoritesScreen : Screen {
                     onEdit = {
                         model.currentSelectedGroup.value = item.key
                         model.editDialogShown.value = true
+                    },
+                    onClick = {
+                        val items = item.value.distinct().map {
+                            FavoriteFullListScreen.FavoriteItem(it.name, it.thumbnailUrl) {
+                                if (it.name != "???") {
+                                    navigator.parent?.parent?.push(WorldScreen(it.id) {
+                                        model.deleteDialogShown.value = true
+                                        model.currentSelectedType.value = FavoriteType.FAVORITE_WORLD
+                                        model.currentSelectedId.value = it.id
+                                    })
+                                } else {
+                                    model.deleteDialogShown.value = true
+                                    model.currentSelectedType.value = FavoriteType.FAVORITE_WORLD
+                                    model.currentSelectedId.value = it.id
+                                }
+                            }
+                        }
+                        navigator.parent?.parent?.push(FavoriteFullListScreen(title, items))
                     }
                 ) {
                     items(item.value.distinct()) {
@@ -260,6 +278,24 @@ class FavoritesScreen : Screen {
                     onEdit = {
                         model.currentSelectedGroup.value = item.key
                         model.editDialogShown.value = true
+                    },
+                    onClick = {
+                        val items = item.value.distinct().map {
+                            FavoriteFullListScreen.FavoriteItem(it.name, it.thumbnailUrl) {
+                                if (it.name != "???") {
+                                    navigator.parent?.parent?.push(AvatarScreen(it.id) {
+                                        model.deleteDialogShown.value = true
+                                        model.currentSelectedType.value = FavoriteType.FAVORITE_AVATAR
+                                        model.currentSelectedId.value = it.id
+                                    })
+                                } else {
+                                    model.deleteDialogShown.value = true
+                                    model.currentSelectedType.value = FavoriteType.FAVORITE_AVATAR
+                                    model.currentSelectedId.value = it.id
+                                }
+                            }
+                        }
+                        navigator.parent?.parent?.push(FavoriteFullListScreen(title, items))
                     }
                 ) {
                     items(item.value.distinct()) {
@@ -304,6 +340,17 @@ class FavoritesScreen : Screen {
                         model.currentSelectedIsFriend.value = true
                         model.currentSelectedGroup.value = item.key
                         model.editDialogShown.value = true
+                    },
+                    onClick = {
+                        val items = item.value.distinct().mapNotNull { fav ->
+                            val user = FriendManager.getFriend(fav.id)
+                            user?.let {
+                                FavoriteFullListScreen.FavoriteItem(it.displayName, it.iconUrl) {
+                                    navigator.parent?.parent?.push(UserProfileScreen(fav.id))
+                                }
+                            }
+                        }
+                        navigator.parent?.parent?.push(FavoriteFullListScreen(title, items))
                     }
                 ) {
                     items(item.value.distinct()) {
