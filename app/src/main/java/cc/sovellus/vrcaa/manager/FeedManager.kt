@@ -28,7 +28,7 @@ import java.util.UUID
 
 object FeedManager {
 
-    private const val MAX_FEED_ENTRIES = 200
+    private const val MAX_FEED_ENTRIES = 1000
     private var FEED_OFFSET = 0
     private val preferences = App.getContext().getSharedPreferences(App.PREFERENCES_NAME, android.content.Context.MODE_PRIVATE)
 
