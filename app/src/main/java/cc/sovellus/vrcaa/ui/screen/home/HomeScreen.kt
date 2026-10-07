@@ -17,6 +17,7 @@
 package cc.sovellus.vrcaa.ui.screen.home
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -140,18 +141,14 @@ class HomeScreen : Screen {
                         onClick = { navigator.parent?.parent?.push(RecentlyVisitedScreen()) }
                     ) {
                         item {
-                            LazyRow(
+                            Box(
                                 modifier = Modifier
                                     .height(190.dp)
-                                    .fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically,
-                                content = {
-                                    item {
-                                        Text(text = stringResource(R.string.result_not_found))
-                                    }
-                                }
-                            )
+                                    .fillParentMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(text = stringResource(R.string.result_not_found))
+                            }
                         }
                     }
                 } else {
@@ -178,18 +175,14 @@ class HomeScreen : Screen {
                         onClick = { navigator.parent?.parent?.push(FriendLocationsScreen()) }
                     ) {
                         item {
-                            LazyRow(
+                            Box(
                                 modifier = Modifier
                                     .height(190.dp)
-                                    .fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically,
-                                content = {
-                                    item {
-                                        Text(text = stringResource(R.string.result_not_found))
-                                    }
-                                }
-                            )
+                                    .fillParentMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(text = stringResource(R.string.result_not_found))
+                            }
                         }
                     }
                 } else {
