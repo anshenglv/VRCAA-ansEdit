@@ -16,17 +16,18 @@
 
 package cc.sovellus.vrcaa.ui.screen.home
 
-import androidx.compose.foundation.layout.Arrangement
+import android.content.SharedPreferences
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -44,21 +45,20 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cc.sovellus.vrcaa.App
 import cc.sovellus.vrcaa.R
-import cc.sovellus.vrcaa.helper.StatusHelper
+import cc.sovellus.vrcaa.extension.columnCountOption
+import cc.sovellus.vrcaa.extension.fixedColumnSize
 import cc.sovellus.vrcaa.manager.CacheManager
+import cc.sovellus.vrcaa.ui.components.layout.GridItemWithFriends
 import cc.sovellus.vrcaa.ui.components.layout.HorizontalRow
-import cc.sovellus.vrcaa.ui.components.layout.RoundedRowItem
 import cc.sovellus.vrcaa.ui.components.layout.RowItem
-import cc.sovellus.vrcaa.ui.components.layout.RowItemWithFriends
 import cc.sovellus.vrcaa.ui.screen.home.HomeScreenModel.HomeState
 import cc.sovellus.vrcaa.ui.screen.misc.LoadingIndicatorScreen
-import cc.sovellus.vrcaa.ui.screen.profile.UserProfileScreen
 import cc.sovellus.vrcaa.ui.screen.world.WorldScreen
 
 class HomeScreen : Screen {
 
     override val key = uniqueScreenKey
-
+    private val preferences: SharedPreferences get() = App.getPreferences()
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
@@ -82,63 +82,68 @@ class HomeScreen : Screen {
         val recent = model.recentlyVisited.collectAsState().value
         val cachedWorlds = CacheManager.worldList.collectAsState().value
 
-        LazyColumn(
+        val friendLocations = friends.filter { it.location.contains("wrld_") }
+        val distinctLocations = friendLocations.distinctBy { it.location.split(':')[0] }
+
+        LazyVerticalGrid(
+            columns = when (preferences.columnCountOption) {
+                0 -> GridCells.Adaptive(166.dp)
+                else -> GridCells.Fixed(preferences.fixedColumnSize)
+            },
+            //contentPadding = PaddingValues(start = 10.dp, end = 10.dp),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 8.dp)
         ) {
-            item {
-                val onlineFriends = friends.filter { it.platform != "web" && it.platform.isNotEmpty() }
-                if (onlineFriends.isEmpty()) {
-                    Text(
-                        text = stringResource(R.string.home_active_friends),
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(start = 16.dp,bottom = 4.dp)
-                    )
-                    LazyRow(
-                        modifier = Modifier
-                            .height(100.dp)
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically,
-                        content = {
-                            item {
+            if (friendLocations.isEmpty()) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    HorizontalRow(
+                        title = stringResource(R.string.home_friend_locations)
+                    ) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .height(190.dp)
+                                    .fillParentMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
                                 Text(text = stringResource(R.string.result_not_found))
                             }
                         }
-                    )
-                } else {
+                    }
+                }
+            } else {
+                item(span = { GridItemSpan(maxLineSpan) }) {
                     Text(
-                        text = stringResource(R.string.home_active_friends),
+                        text = stringResource(R.string.home_friend_locations),
                         fontWeight = FontWeight.Bold,
                         fontSize = 24.sp,
-                        modifier = Modifier.padding(start = 16.dp, bottom = 4.dp)
-                    )
-
-                    LazyRow(
                         modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy((-24).dp),
-                        content = {
-                            items(onlineFriends.sortedBy { StatusHelper.getStatusFromString(it.status) }){ friend ->
-                                RoundedRowItem(
-                                    name = friend.displayName,
-                                    url = friend.iconUrl,
-                                    status = friend.status,
-                                    onClick = { navigator.parent?.parent?.push(UserProfileScreen(friend.id)) }
-                                )
-                            }
-                        }
+                            .padding(start = 16.dp, bottom = 4.dp)
+                            .clickable{ navigator.parent?.parent?.push(FriendLocationsScreen()) }
                     )
                 }
 
-                Spacer(modifier = Modifier.padding(4.dp))
+                items(distinctLocations) { friend ->
+                    val worldId = friend.location.split(':')[0]
+                    val world = cachedWorlds.find { it.id == worldId }
+                    GridItemWithFriends(
+                        name = world?.name ?: "???",
+                        url = world?.thumbnailUrl ?: "",
+                        friends = friends.filter { it.location == friend.location },
+                        onClick = { navigator.parent?.parent?.push(WorldScreen(worldId)) }
+                    )
+                }
+            }
 
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Spacer(modifier = Modifier.padding(4.dp))
+            }
+
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 if (recent.isEmpty()) {
                     HorizontalRow(
-                        title = stringResource(R.string.home_recently_visited),
-                        onClick = { navigator.parent?.parent?.push(RecentlyVisitedScreen()) }
+                        title = stringResource(R.string.home_recently_visited)
                     ) {
                         item {
                             Box(
@@ -165,83 +170,10 @@ class HomeScreen : Screen {
                         }
                     }
                 }
+            }
 
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 Spacer(modifier = Modifier.padding(4.dp))
-
-                val friendLocations = friends.filter { it.location.contains("wrld_") }
-                if (friendLocations.isEmpty()) {
-                    HorizontalRow(
-                        title = stringResource(R.string.home_friend_locations),
-                        onClick = { navigator.parent?.parent?.push(FriendLocationsScreen()) }
-                    ) {
-                        item {
-                            Box(
-                                modifier = Modifier
-                                    .height(190.dp)
-                                    .fillParentMaxWidth(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(text = stringResource(R.string.result_not_found))
-                            }
-                        }
-                    }
-                } else {
-                    HorizontalRow(
-                        title = stringResource(R.string.home_friend_locations),
-                        onClick = { navigator.parent?.parent?.push(FriendLocationsScreen()) }
-                    ) {
-                        items(
-                            friendLocations.distinctBy { it.location.split(':')[0] }
-                        ) { friend ->
-                            val worldId = friend.location.split(':')[0]
-                            val world = cachedWorlds.find { it.id == worldId }
-                            RowItemWithFriends(
-                                name = world?.name ?: "???",
-                                url = world?.thumbnailUrl ?: "",
-                                friends = friends.filter { it.location == friend.location },
-                                onClick = { navigator.parent?.parent?.push(WorldScreen(worldId)) }
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.padding(4.dp))
-
-//                val worlds = CacheManager.recommendedWorldsState.collectAsState()
-//                if (worlds.value.isEmpty()) {
-//                    Text(
-//                        text = stringResource(R.string.home_curated_for_you),
-//                        style = MaterialTheme.typography.headlineSmall,
-//                        fontWeight = FontWeight.Bold,
-//                        modifier = Modifier.padding(start = 16.dp, bottom = 4.dp)
-//                    )
-//                    LazyRow(
-//                        modifier = Modifier
-//                            .height(190.dp)
-//                            .fillMaxWidth(),
-//                        horizontalArrangement = Arrangement.Center,
-//                        verticalAlignment = Alignment.CenterVertically,
-//                        content = {
-//                            item {
-//                                Text(text = stringResource(R.string.result_not_found))
-//                            }
-//                        }
-//                    )
-//                } else {
-//                    HorizontalRow(
-//                        title = stringResource(R.string.home_curated_for_you)
-//                    ) {
-//                        items(worlds.value) { world ->
-//                            RowItem(
-//                                name = world.name,
-//                                url = world.imageUrl.ifEmpty { world.thumbnailImageUrl },
-//                                onClick = { navigator.parent?.parent?.push(WorldScreen(world.id)) }
-//                            )
-//                        }
-//                    }
-//                }
-//
-//                Spacer(modifier = Modifier.padding(4.dp))
             }
         }
     }

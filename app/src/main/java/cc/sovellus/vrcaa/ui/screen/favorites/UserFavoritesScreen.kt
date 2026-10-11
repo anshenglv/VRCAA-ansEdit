@@ -199,7 +199,8 @@ class UserFavoritesScreen(
                                     }
                                 }
                             }
-                            navigator.push(FavoriteFullListScreen(item.key, items))
+                            FavoriteFullListScreen.favoriteItems = items
+                            navigator.push(FavoriteFullListScreen(item.key))
                         }
                     ) {
                         items(item.value) {
@@ -247,7 +248,8 @@ class UserFavoritesScreen(
                                     }
                                 }
                             }
-                            navigator.push(FavoriteFullListScreen(item.key, items))
+                            FavoriteFullListScreen.favoriteItems = items
+                            navigator.push(FavoriteFullListScreen(item.key))
                         }
                     ) {
                         items(item.value) {

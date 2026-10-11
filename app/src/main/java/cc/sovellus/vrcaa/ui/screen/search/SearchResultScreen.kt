@@ -453,7 +453,7 @@ class SearchResultScreen(
                     0 -> GridCells.Adaptive(166.dp)
                     else -> GridCells.Fixed(model.preferences.fixedColumnSize)
                 },contentPadding = PaddingValues(
-                    start = 12.dp, top = 16.dp, end = 16.dp, bottom = 16.dp
+                    start = 4.dp, top = 4.dp, end = 4.dp, bottom = 16.dp
                 ), content = {
                     items(state.value) { world ->
                         GridItem(
@@ -500,7 +500,7 @@ class SearchResultScreen(
                     0 -> GridCells.Adaptive(166.dp)
                     else -> GridCells.Fixed(model.preferences.fixedColumnSize)
                 },contentPadding = PaddingValues(
-                    start = 12.dp, top = 16.dp, end = 16.dp, bottom = 16.dp
+                    start = 4.dp, top = 4.dp, end = 4.dp, bottom = 16.dp
                 ), content = {
                     items(state.value) { user ->
                         GridItem(
@@ -551,7 +551,7 @@ class SearchResultScreen(
                     0 -> GridCells.Adaptive(166.dp)
                     else -> GridCells.Fixed(model.preferences.fixedColumnSize)
                 }, contentPadding = PaddingValues(
-                    start = 12.dp, top = 16.dp, end = 16.dp, bottom = 16.dp
+                    start = 4.dp, top = 4.dp, end = 4.dp, bottom = 16.dp
                 ), content = {
                     items(state.value) { avatar ->
                         GridItem(

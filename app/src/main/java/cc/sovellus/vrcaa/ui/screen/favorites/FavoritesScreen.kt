@@ -234,7 +234,8 @@ class FavoritesScreen : Screen {
                                 }
                             }
                         }
-                        navigator.parent?.parent?.push(FavoriteFullListScreen(title, items))
+                        FavoriteFullListScreen.favoriteItems = items
+                        navigator.parent?.parent?.push(FavoriteFullListScreen(title))
                     }
                 ) {
                     items(item.value.distinct()) {
@@ -295,7 +296,8 @@ class FavoritesScreen : Screen {
                                 }
                             }
                         }
-                        navigator.parent?.parent?.push(FavoriteFullListScreen(title, items))
+                        FavoriteFullListScreen.favoriteItems = items
+                        navigator.parent?.parent?.push(FavoriteFullListScreen(title))
                     }
                 ) {
                     items(item.value.distinct()) {
@@ -350,7 +352,8 @@ class FavoritesScreen : Screen {
                                 }
                             }
                         }
-                        navigator.parent?.parent?.push(FavoriteFullListScreen(title, items))
+                        FavoriteFullListScreen.favoriteItems = items
+                        navigator.parent?.parent?.push(FavoriteFullListScreen(title))
                     }
                 ) {
                     items(item.value.distinct()) {

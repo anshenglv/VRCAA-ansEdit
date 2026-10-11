@@ -196,8 +196,7 @@ class FriendsScreen : Screen {
             LazyColumn(
                 Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight()
-                    .padding(1.dp),
+                    .fillMaxHeight(),
                 state = rememberLazyListState()
             ) {
                 val sections = mutableListOf<LazyListScope.() -> Unit>()

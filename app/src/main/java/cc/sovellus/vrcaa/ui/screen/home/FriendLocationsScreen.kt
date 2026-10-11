@@ -16,7 +16,6 @@
 
 package cc.sovellus.vrcaa.ui.screen.home
 
-import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -53,7 +52,7 @@ import cc.sovellus.vrcaa.ui.screen.world.WorldScreen
 class FriendLocationsScreen : Screen {
 
     override val key = uniqueScreenKey
-    private val preferences: SharedPreferences = App.getContext().getSharedPreferences(App.PREFERENCES_NAME, MODE_PRIVATE)
+    private val preferences: SharedPreferences get() = App.getPreferences()
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -85,7 +84,7 @@ class FriendLocationsScreen : Screen {
                     0 -> GridCells.Adaptive(166.dp)
                     else -> GridCells.Fixed(preferences.fixedColumnSize)},
                 contentPadding = PaddingValues(
-                    start = 12.dp, top = 16.dp, end = 16.dp, bottom = 16.dp
+                    start = 5.dp, top = 5.dp, end = 5.dp, bottom = 16.dp
                 ),
                 modifier = Modifier
                     .fillMaxSize()

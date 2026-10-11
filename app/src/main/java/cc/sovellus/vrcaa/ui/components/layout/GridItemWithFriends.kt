@@ -63,7 +63,7 @@ fun GridItemWithFriends(
             defaultElevation = 2.dp
         ),
         modifier = Modifier
-            .padding(4.dp)
+            .padding(5.dp)
             .fillMaxWidth()
             .heightIn(125.dp)
             .widthIn(166.dp, maxItemWidth)
